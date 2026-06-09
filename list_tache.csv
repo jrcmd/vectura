@@ -1,0 +1,349 @@
+﻿Issue Type;Epic;Summary;Description;Priority;Labels;Assignee role
+Epic;;EPIC 1 — Socle technique;Mettre en place la base technique exploitable du produit Vectura;Critique;mvp,infra,backend;Admin Système
+Story;EPIC 1 — Socle technique;STORY 1.1 — Initialiser le projet;En tant qu'équipe projet nous avons besoin d'une base de code propre pour démarrer le développement;Critique;mvp,infra,backend,frontend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Créer le repository Git;Créer le dépôt principal et définir la structure initiale du projet;Critique;infra;Admin Système
+Task;EPIC 1 — Socle technique;Définir la convention de branches;Définir main develop feature hotfix et règles de merge;Haute;infra,process;Admin Système
+Task;EPIC 1 — Socle technique;Initialiser le frontend;Créer l'application frontend avec structure de base;Critique;frontend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Initialiser le backend;Créer l'API backend avec structure de base;Critique;backend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Ajouter TypeScript;Configurer TypeScript sur le frontend et le backend;Haute;frontend,backend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Créer la structure dossiers front et back;Organiser composants routes services modèles utilitaires et configuration;Haute;frontend,backend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Ajouter README technique initial;Documenter démarrage local architecture et conventions;Normale;documentation;Admin Système
+Story;EPIC 1 — Socle technique;STORY 1.2 — Mettre en place Docker;En tant qu'équipe projet nous avons besoin d'environnements homogènes via conteneurs;Critique;mvp,infra;Admin Système
+Task;EPIC 1 — Socle technique;Créer docker-compose.yml;Définir les services nécessaires au projet;Critique;infra,docker;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter service frontend;Conteneuriser l'application frontend;Critique;infra,docker,frontend;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter service backend;Conteneuriser l'API backend;Critique;infra,docker,backend;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter service PostgreSQL;Déployer la base PostgreSQL avec persistance;Critique;infra,database;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter service Redis;Déployer Redis pour cache files et tâches;Haute;infra,backend;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter volumes persistants;Persister base de données uploads et logs;Critique;infra,docker;Admin Système
+Task;EPIC 1 — Socle technique;Ajouter réseau Docker interne;Isoler les services et organiser la communication interne;Haute;infra,docker;Admin Système
+Task;EPIC 1 — Socle technique;Documenter commandes de démarrage;Lister les commandes utiles pour lancer et arrêter le projet;Normale;documentation;Admin Système
+Story;EPIC 1 — Socle technique;STORY 1.3 — Préparer les environnements;En tant qu'équipe projet nous avons besoin d'une configuration claire par environnement;Critique;infra,security;Admin Système
+Task;EPIC 1 — Socle technique;Créer .env.example;Lister toutes les variables nécessaires au projet;Critique;infra;Admin Système
+Task;EPIC 1 — Socle technique;Définir variables frontend;Déclarer URL API mode debug et autres paramètres front;Haute;frontend,infra;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Définir variables backend;Déclarer port secrets services tiers et options serveur;Critique;backend,infra;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Définir variables DB;Déclarer hôte port nom base utilisateur mot de passe;Critique;database,infra;Admin Système
+Task;EPIC 1 — Socle technique;Définir variables SMTP;Déclarer configuration du service mail;Haute;notifications,infra;Admin Système
+Task;EPIC 1 — Socle technique;Définir variables stockage fichiers;Déclarer chemin ou bucket de stockage des documents;Critique;infra,security;Admin Système
+Task;EPIC 1 — Socle technique;Définir variables JWT;Déclarer secrets et durées de session;Critique;backend,security;Développeur Full-Stack
+Story;EPIC 1 — Socle technique;STORY 1.4 — Mettre en place la base de données;En tant que système Vectura nous avons besoin d'une base relationnelle fiable;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Créer la connexion PostgreSQL;Configurer la connexion applicative à la base;Critique;database,backend;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Configurer ORM ou query builder;Choisir et intégrer l'outil d'accès aux données;Haute;backend,database;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Créer système de migrations;Permettre l'évolution contrôlée du schéma de base;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Créer seed de base;Préparer des données de test minimales;Normale;backend,database;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Tester le démarrage local;Vérifier que la base démarre correctement avec l'application;Haute;backend,infra;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Documenter reset DB;Décrire la procédure de remise à zéro en dev;Normale;documentation,database;Admin Système
+Story;EPIC 1 — Socle technique;STORY 1.5 — Mettre en place CI CD;En tant qu'équipe projet nous avons besoin d'automatiser qualité et déploiement;Haute;infra,quality;Admin Système
+Task;EPIC 1 — Socle technique;Configurer lint frontend;Automatiser le contrôle qualité du code frontend;Haute;frontend,quality;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Configurer lint backend;Automatiser le contrôle qualité du code backend;Haute;backend,quality;Développeur Full-Stack
+Task;EPIC 1 — Socle technique;Configurer pipeline test;Lancer automatiquement les tests sur chaque push;Haute;infra,quality;Admin Système
+Task;EPIC 1 — Socle technique;Configurer pipeline build;Vérifier la construction des artefacts applicatifs;Haute;infra;Admin Système
+Task;EPIC 1 — Socle technique;Configurer pipeline staging;Déployer automatiquement en préproduction;Haute;infra,deploy;Admin Système
+Task;EPIC 1 — Socle technique;Préparer stratégie de déploiement production;Définir le mode de déploiement et la validation;Critique;infra,deploy;Admin Système
+Task;EPIC 1 — Socle technique;Prévoir rollback minimal;Permettre un retour arrière rapide en cas d'incident;Critique;infra,deploy;Admin Système
+;;;;;;
+Epic;;EPIC 2 — Landing page publique;Créer la vitrine publique de Vectura pour convertir chauffeurs et entreprises;Haute;mvp,frontend,ux;UI/UX Designer
+Story;EPIC 2 — Landing page publique;STORY 2.1 — Concevoir l'arborescence publique;En tant que visiteur je comprends rapidement l'offre et les actions disponibles;Haute;ux,frontend;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir sections landing;Structurer hero bénéfices fonctionnement preuves et footer;Haute;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir hiérarchie des CTA;Mettre en avant chauffeur et entreprise avec priorités visuelles;Haute;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir messages de réassurance;Préparer arguments confiance conformité et simplicité;Haute;ux,content;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir parcours mobile first;Prévoir une navigation efficace sur smartphone;Haute;ux,mobile;UI/UX Designer
+Story;EPIC 2 — Landing page publique;STORY 2.2 — Produire les wireframes landing;En tant qu'équipe projet nous avons besoin d'une base UX avant la maquette finale;Haute;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe hero section;Dessiner la zone d'entrée principale avec CTA;Haute;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe bloc bénéfices chauffeur;Présenter l'intérêt du service pour les chauffeurs;Normale;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe bloc bénéfices entreprise;Présenter l'intérêt du service pour les entreprises;Normale;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe bloc fonctionnement;Illustrer le cycle inscription mission validation;Normale;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe footer légal;Prévoir liens vers mentions et confidentialité;Normale;ux;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Wireframe version mobile;Adapter le parcours et les sections à petit écran;Haute;ux,mobile;UI/UX Designer
+Story;EPIC 2 — Landing page publique;STORY 2.3 — Produire la maquette UI;En tant qu'équipe projet nous avons besoin d'un design system visuel cohérent;Haute;ux,ui;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir palette CTA chauffeur;Choisir une couleur vive et cohérente;Normale;ui;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir palette CTA entreprise;Choisir une couleur sobre et professionnelle;Normale;ui;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir typographie;Choisir la hiérarchie visuelle des textes;Normale;ui;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir composants landing;Créer boutons cartes sections et footer;Normale;ui,design-system;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir style cartes et boutons;Spécifier états et variantes visuelles;Normale;ui;UI/UX Designer
+Task;EPIC 2 — Landing page publique;Définir états hover focus;Spécifier les interactions utilisateur;Normale;ui,accessibility;UI/UX Designer
+Story;EPIC 2 — Landing page publique;STORY 2.4 — Développer la landing;En tant que visiteur je peux accéder à une page publique claire et responsive;Haute;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Intégrer header;Développer l'en-tête public avec navigation;Haute;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Intégrer hero et doubles CTA;Développer la section d'accroche principale;Haute;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Intégrer sections réassurance;Développer les preuves de confiance et bénéfices;Normale;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Intégrer bloc fonctionnement;Développer la section explicative du service;Normale;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Intégrer footer;Développer le pied de page avec liens utiles;Normale;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Rendre la page responsive;Adapter la page mobile tablette desktop;Critique;frontend,mobile;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Optimiser performances mobile;Réduire poids et améliorer vitesse d'affichage;Normale;frontend,performance;Développeur Full-Stack
+Story;EPIC 2 — Landing page publique;STORY 2.5 — Prévoir acquisition;En tant que porteur du projet je peux capter des inscrits depuis les supports marketing;Normale;frontend,marketing;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Ajouter emplacement QR code;Prévoir un bloc dédié pour les flyers;Normale;frontend,marketing;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Créer bouton vers inscription chauffeur;Relier le CTA chauffeur à son parcours;Critique;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Créer bouton vers espace entreprise;Relier le CTA entreprise à son parcours;Critique;frontend;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Ajouter tracking clic CTA;Mesurer les conversions sur les boutons principaux;Normale;frontend,analytics;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Ajouter métadonnées SEO;Améliorer la visibilité et le partage de la page;Normale;frontend,seo;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Ajouter page mentions légales;Créer la page légale minimale;Critique;frontend,legal;Développeur Full-Stack
+Task;EPIC 2 — Landing page publique;Ajouter page politique confidentialité;Créer la page RGPD minimale;Critique;frontend,legal,compliance;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 3 — Espace Chauffeur;Permettre l'inscription chauffeur le dépôt documentaire et l'accès contrôlé aux missions;Critique;mvp,frontend,backend;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.1 — Inscription chauffeur;En tant que chauffeur je peux créer mon compte;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Concevoir wireframe formulaire inscription;Définir l'organisation du formulaire d'entrée;Haute;ux;UI/UX Designer
+Task;EPIC 3 — Espace Chauffeur;Concevoir maquette formulaire inscription;Créer la version UI finale du formulaire;Haute;ux,ui;UI/UX Designer
+Task;EPIC 3 — Espace Chauffeur;Développer formulaire front;Coder le formulaire d'inscription chauffeur;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter validation nom et prénom;Contrôler les champs obligatoires;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter validation téléphone;Contrôler le format du numéro;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter champ ville avec auto-complétion;Permettre la sélection assistée de la ville;Haute;frontend,ux;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Créer endpoint API inscription;Créer la route backend d'enregistrement chauffeur;Critique;backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Sauvegarder chauffeur en base;Persister le profil et ses informations initiales;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Définir statut EN_ATTENTE par défaut;Appliquer le statut initial au nouveau chauffeur;Critique;backend;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.2 — Authentification chauffeur;En tant que chauffeur je peux me connecter et accéder à mon espace;Critique;frontend,backend,security;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Développer écran connexion chauffeur;Créer l'interface de login;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Créer endpoint login chauffeur;Créer la route de connexion sécurisée;Critique;backend,security;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Générer token de session;Mettre en place l'authentification sécurisée;Critique;backend,security;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Protéger routes chauffeur;Limiter l'accès aux pages privées;Critique;frontend,backend,security;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter déconnexion;Permettre la fermeture de session;Normale;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Prévoir reset mot de passe;Créer le flux minimal de récupération;Normale;frontend,backend;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.3 — Dépôt de documents;En tant que chauffeur je peux déposer mes pièces justificatives;Critique;frontend,backend,compliance;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Concevoir bloc upload documents;Définir l'expérience d'ajout de documents;Haute;ux,ui;UI/UX Designer
+Task;EPIC 3 — Espace Chauffeur;Développer composants upload;Coder les champs d'envoi de fichiers;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload permis C CE;Traiter le dépôt du permis;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload FIMO FCO;Traiter le dépôt FIMO ou FCO;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload carte chrono;Traiter le dépôt de la carte conducteur;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload Kbis;Traiter le dépôt du Kbis;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload attestation URSSAF;Traiter le dépôt de l'attestation de vigilance;Critique;frontend,backend,compliance;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Gérer upload RC Pro;Traiter le dépôt de l'assurance RC Pro;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter date d'expiration;Associer une date à chaque document;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Sauvegarder URL fichier en base;Enregistrer les références de stockage;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Contrôler taille et type fichier;Sécuriser les uploads côté front et back;Critique;backend,security;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.4 — Tableau de bord chauffeur;En tant que chauffeur je peux voir mon statut et mes missions;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Concevoir wireframe dashboard chauffeur;Définir la hiérarchie de l'écran principal chauffeur;Normale;ux;UI/UX Designer
+Task;EPIC 3 — Espace Chauffeur;Développer bannière de statut;Afficher en attente validé suspendu ou radié;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher documents manquants;Lister les pièces à compléter;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher documents validés rejetés;Montrer le statut des documents soumis;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher missions disponibles;Présenter la liste des missions compatibles;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter message profil en attente;Bloquer l'accès tant que validation admin absente;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter état vide sans mission;Créer un affichage clair si aucune mission;Normale;frontend,ux;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.5 — Consultation mission;En tant que chauffeur je peux consulter et accepter une mission;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Développer liste missions;Créer la vue de liste;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Développer détail mission;Créer la vue détaillée;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher lieu date horaires tarif;Afficher les données principales de la mission;Critique;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher type camion requis;Montrer la qualification attendue;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter bouton accepter mission;Permettre l'acceptation de la mission;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter confirmation d'acceptation;Sécuriser l'action utilisateur;Normale;frontend;Développeur Full-Stack
+Story;EPIC 3 — Espace Chauffeur;STORY 3.6 — Discipline chauffeur;En tant que plateforme je gère les annulations tardives automatiquement;Critique;backend,compliance;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Ajouter bouton désistement;Permettre l'annulation dans le cadre autorisé;Haute;frontend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Bloquer désistement à H-24;Interdire l'annulation tardive depuis l'interface;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Créer règle annulation tardive;Détecter les annulations sous 24 heures;Critique;backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Suspendre compte 7 jours automatiquement;Appliquer la sanction temporaire;Critique;backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Incrémenter compteur d'annulations;Suivre le nombre d'incidents par chauffeur;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Radier au troisième désistement tardif;Appliquer la radiation automatique;Critique;backend;Développeur Full-Stack
+Task;EPIC 3 — Espace Chauffeur;Afficher statut suspendu ou radié au chauffeur;Informer clairement l'utilisateur de sa situation;Haute;frontend;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 4 — Espace Entreprise;Permettre aux entreprises de créer des missions et gérer leurs relations chauffeurs;Critique;mvp,frontend,backend;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.1 — Compte entreprise;En tant qu'entreprise je peux créer et utiliser mon espace;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer inscription entreprise;Créer le formulaire entreprise;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer connexion entreprise;Créer le login entreprise;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Créer rôle ENTREPRISE;Ajouter le rôle et ses permissions;Critique;backend,security;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Protéger routes entreprise;Limiter l'accès aux utilisateurs autorisés;Critique;frontend,backend,security;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter page profil entreprise;Créer la vue de profil société;Normale;frontend;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.2 — Création de mission;En tant qu'entreprise je peux publier une mission;Critique;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Concevoir wireframe création mission;Définir le parcours de saisie;Normale;ux;UI/UX Designer
+Task;EPIC 4 — Espace Entreprise;Concevoir maquette création mission;Créer la maquette de l'écran;Normale;ux,ui;UI/UX Designer
+Task;EPIC 4 — Espace Entreprise;Développer formulaire mission;Coder le formulaire de mission;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ type camion;Créer le champ de qualification véhicule;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ date;Créer la sélection de date;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ horaires;Créer les champs d'horaire;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ lieu;Créer la saisie du lieu;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ description courte;Créer la description opérationnelle;Haute;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter champ taux horaire;Créer la saisie du tarif;Critique;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Créer endpoint création mission;Créer l'API de création mission;Critique;backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Enregistrer mission en base;Persister la mission et son statut;Critique;backend,database;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.3 — Tarification plancher;En tant que plateforme je contrôle les prix minimums;Critique;backend,billing;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Définir règles PL et SPL;Fixer les seuils minimaux métier;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter validation front prix minimum;Empêcher une saisie trop basse côté interface;Haute;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter validation back prix minimum;Empêcher une saisie trop basse côté API;Critique;backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Retourner message erreur explicite;Informer clairement l'utilisateur;Normale;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Couvrir la règle par tests;Assurer la non régression;Haute;backend,quality;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.4 — Favoris;En tant qu'entreprise je peux sauvegarder des chauffeurs favoris;Haute;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter bouton ajouter aux favoris;Permettre la mémorisation d'un chauffeur;Haute;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Créer table favoris;Modéliser la relation entreprise chauffeur;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer liste favoris entreprise;Créer la page de gestion des favoris;Haute;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter suppression favori;Permettre le retrait d'un favori;Normale;frontend,backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter filtre favoris;Filtrer la liste sur l'espace entreprise;Normale;frontend;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.5 — Priorité favoris;En tant qu'entreprise je peux réserver mes missions à mes favoris au départ;Haute;backend,frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter case priorité favoris 2h;Créer l'option au formulaire de mission;Haute;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Enregistrer fenêtre de priorité;Sauvegarder la durée de priorité;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Restreindre diffusion aux favoris pendant 2h;Appliquer la règle de diffusion initiale;Critique;backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ouvrir mission au reste des profils qualifiés après délai;Basculer automatiquement en diffusion générale;Critique;backend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter test métier de bascule;Valider le bon passage de priorité;Haute;backend,quality;Développeur Full-Stack
+Story;EPIC 4 — Espace Entreprise;STORY 4.6 — Historique et factures;En tant qu'entreprise je peux suivre mes missions et récupérer mes factures;Haute;frontend,billing;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer liste missions passées;Créer l'historique des missions terminées;Normale;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer liste missions en cours;Créer la vue active des missions;Normale;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Développer vue facturation;Créer l'écran de facturation;Haute;frontend;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Afficher factures hebdomadaires;Lister les factures disponibles;Haute;frontend,backend,billing;Développeur Full-Stack
+Task;EPIC 4 — Espace Entreprise;Ajouter téléchargement PDF;Permettre l'export de facture;Haute;frontend,backend,billing;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 5 — Matching et discipline;Gérer automatiquement la compatibilité missions chauffeurs et les règles de sanction;Critique;mvp,backend;Développeur Full-Stack
+Story;EPIC 5 — Matching et discipline;STORY 5.1 — Modèle de qualification chauffeur;En tant que plateforme je connais les qualifications valides du chauffeur;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Créer champs permis;Ajouter les champs C CE et autres si nécessaire;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Créer champs options ADR et Frigo;Ajouter les qualifications complémentaires;Haute;backend,database;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Créer logique qualification validée;Déduire l'état exploitable des documents;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Bloquer qualification si document invalide;Empêcher l'usage d'un document expiré ou rejeté;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Prévoir extensibilité future;Concevoir des règles ajoutables;Normale;backend,architecture;Développeur Full-Stack
+Story;EPIC 5 — Matching et discipline;STORY 5.2 — Calcul de distance;En tant que plateforme je calcule la distance entre le chauffeur et la mission;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Géocoder ville chauffeur;Obtenir des coordonnées pour la localisation chauffeur;Haute;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Géocoder lieu mission;Obtenir des coordonnées pour le lieu de mission;Haute;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Calculer distance km;Mesurer la distance entre les deux points;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Définir rayon max configurable;Permettre l'ajustement métier de la distance acceptable;Haute;backend,config;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Stocker distance calculée si nécessaire;Optimiser l'affichage ou la recherche;Normale;backend,database;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Tester cas hors zone;Vérifier le rejet des missions trop éloignées;Haute;backend,quality;Développeur Full-Stack
+Story;EPIC 5 — Matching et discipline;STORY 5.3 — Algorithme de matching;En tant que chauffeur je ne vois que les missions compatibles;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Exclure profils EN_ATTENTE;Ne pas afficher les missions aux profils non validés;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Exclure profils SUSPENDU;Bloquer temporairement l'accès aux missions;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Exclure profils RADIE;Bloquer définitivement l'accès aux missions;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Vérifier permis compatibles;Comparer permis chauffeur et exigences mission;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Vérifier documents valides;Contrôler la conformité des pièces;Critique;backend,compliance;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Vérifier distance compatible;Appliquer le filtre géographique;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Vérifier fenêtre priorité favoris;Filtrer selon la priorité de diffusion;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Retourner liste missions filtrées;Servir les résultats compatibles au front;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Écrire tests unitaires matching;Sécuriser le comportement métier;Haute;backend,quality;Développeur Full-Stack
+Story;EPIC 5 — Matching et discipline;STORY 5.4 — Cycle mission;En tant que plateforme je trace les changements d'état d'une mission;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Passer mission de OUVERTE à POURVUE;Changer l'état après acceptation;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Associer chauffeur à mission;Enregistrer l'affectation;Critique;backend,database;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Gérer annulation entreprise;Prévoir le changement d'état côté société;Haute;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Gérer annulation chauffeur;Prévoir le changement d'état côté chauffeur;Haute;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Gérer mission terminée;Clôturer la mission après exécution;Critique;backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Gérer historique des statuts;Journaliser les transitions;Haute;backend,database;Développeur Full-Stack
+Story;EPIC 5 — Matching et discipline;STORY 5.5 — Rappels mission;En tant que plateforme j'envoie les relances nécessaires avant mission;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Planifier notification J-1;Créer la logique de rappel veille;Haute;backend,notifications;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Planifier notification matin J;Créer la logique de rappel jour J;Haute;backend,notifications;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Déclencher envoi automatique;Connecter les jobs au service mail;Haute;backend,notifications;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Journaliser les envois;Tracer succès et erreurs;Normale;backend,notifications;Développeur Full-Stack
+Task;EPIC 5 — Matching et discipline;Gérer échec d'envoi;Prévoir reprises ou alertes;Normale;backend,notifications;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 6 — Back-office administrateur;Créer l'interface de pilotage exploitation conformité et contrôle;Critique;mvp,admin,frontend,backend;Développeur Full-Stack
+Story;EPIC 6 — Back-office administrateur;STORY 6.1 — Dashboard administrateur;En tant qu'administrateur je vois les indicateurs clés de Vectura;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Concevoir wireframe dashboard admin;Définir la structure du centre de contrôle;Normale;ux;UI/UX Designer
+Task;EPIC 6 — Back-office administrateur;Concevoir maquette dashboard admin;Créer la maquette visuelle du tableau de bord;Normale;ux,ui;UI/UX Designer
+Task;EPIC 6 — Back-office administrateur;Développer KPI missions en cours;Afficher le nombre de chauffeurs en mission;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer KPI alertes documents;Afficher les alertes d'expiration proches;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer KPI nouveaux inscrits;Afficher les profils en attente d'entretien;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer KPI CA semaine;Afficher le chiffre d'affaires hebdomadaire;Haute;admin,frontend,backend,billing;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter états de chargement;Prévoir loading et fallback sur les KPI;Normale;frontend,ux;Développeur Full-Stack
+Story;EPIC 6 — Back-office administrateur;STORY 6.2 — Gestion des chauffeurs;En tant qu'administrateur je peux filtrer et piloter les profils chauffeurs;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer tableau chauffeurs;Créer la liste principale admin;Critique;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter colonnes nom prénom téléphone;Afficher les infos principales;Critique;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter colonne statut;Afficher validé en attente suspendu radié;Critique;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter colonne qualifications;Afficher C CE ADR Frigo;Haute;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter colonne note moyenne;Afficher la moyenne des évaluations;Normale;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter filtres par statut;Faciliter le tri opérationnel;Haute;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter recherche par nom téléphone;Faciliter l'accès rapide à un profil;Haute;admin,frontend;Développeur Full-Stack
+Story;EPIC 6 — Back-office administrateur;STORY 6.3 — Validation documents;En tant qu'administrateur je peux contrôler les documents chauffeurs;Critique;admin,backend,compliance;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer vue détail chauffeur;Afficher les détails d'un dossier;Critique;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Afficher documents uploadés;Présenter les pièces envoyées;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Afficher dates d'expiration;Montrer les échéances documentaires;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter bouton valider document;Permettre la validation individuelle;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter bouton rejeter document;Permettre le rejet motivé;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Journaliser validation rejet;Tracer l'action et son auteur;Haute;admin,backend,security;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Notifier chauffeur après action;Informer le chauffeur du résultat;Haute;notifications,backend;Développeur Full-Stack
+Story;EPIC 6 — Back-office administrateur;STORY 6.4 — Suivi des missions;En tant qu'administrateur je peux surveiller l'exploitation des missions;Haute;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer liste missions non pourvues;Afficher les missions urgentes à couvrir;Critique;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer liste missions à venir;Afficher les missions planifiées;Haute;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer historique missions;Afficher les missions passées et leurs statuts;Normale;admin,frontend,backend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter filtres date et statut;Faciliter le pilotage quotidien;Normale;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter accès détail mission;Permettre la consultation détaillée;Normale;admin,frontend;Développeur Full-Stack
+Story;EPIC 6 — Back-office administrateur;STORY 6.5 — Conformité vigilance;En tant qu'administrateur je peux suivre la conformité URSSAF;Critique;admin,compliance;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Identifier attestations URSSAF de plus de 6 mois;Détecter automatiquement les dossiers non conformes;Critique;backend,compliance;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Développer vue conformité;Créer l'écran de suivi vigilance;Haute;admin,frontend;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Ajouter bouton relance mail type;Permettre l'envoi rapide d'une relance;Haute;admin,notifications;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Journaliser relances conformité;Tracer les envois et leurs dates;Normale;backend,compliance;Développeur Full-Stack
+Task;EPIC 6 — Back-office administrateur;Bloquer visibilité missions si non conforme;Appliquer la règle métier décidée;Critique;backend,compliance;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 7 — Notifications et automatisation;Automatiser les alertes documents missions et sanctions;Haute;mvp,notifications,backend;Admin Système
+Story;EPIC 7 — Notifications et automatisation;STORY 7.1 — Service e-mail;En tant que plateforme je peux envoyer des messages transactionnels;Haute;notifications,infra,backend;Admin Système
+Task;EPIC 7 — Notifications et automatisation;Choisir fournisseur SMTP API;Sélectionner le service d'envoi;Haute;notifications,infra;Admin Système
+Task;EPIC 7 — Notifications et automatisation;Configurer service mail;Brancher l'application au fournisseur retenu;Critique;notifications,infra;Admin Système
+Task;EPIC 7 — Notifications et automatisation;Créer template expiration document;Préparer le modèle de mail dédié;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer template rappel mission;Préparer le modèle de rappel;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer template relance conformité;Préparer le modèle de conformité;Haute;notifications,backend,compliance;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer template validation rejet document;Préparer le modèle de retour admin;Haute;notifications,backend;Développeur Full-Stack
+Story;EPIC 7 — Notifications et automatisation;STORY 7.2 — Alertes documents;En tant que plateforme je relance avant expiration des documents;Critique;notifications,backend,compliance;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer job quotidien documents;Planifier l'analyse quotidienne des échéances;Critique;backend,notifications;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Détecter expirations à J-30;Identifier les documents proches d'expiration;Critique;backend,compliance;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Détecter expirations à J-7;Identifier les urgences proches;Haute;backend,compliance;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Envoyer notifications documents;Envoyer les relances au chauffeur;Critique;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Journaliser résultats alertes;Tracer les envois et retours;Normale;backend,notifications;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Empêcher doublons excessifs;Éviter les relances répétées non contrôlées;Normale;backend,notifications;Développeur Full-Stack
+Story;EPIC 7 — Notifications et automatisation;STORY 7.3 — Relances mission;En tant que plateforme je rappelle les missions avant leur démarrage;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer job J-1;Planifier la relance la veille;Haute;backend,notifications;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer job matin J;Planifier la relance du jour même;Haute;backend,notifications;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Filtrer missions concernées;Sélectionner les bonnes missions;Haute;backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Envoyer mail chauffeur;Notifier le chauffeur;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Envoyer mail entreprise si besoin;Notifier la société selon le scénario;Normale;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Journaliser succès et échecs;Conserver l'historique des envois;Normale;backend,notifications;Développeur Full-Stack
+Story;EPIC 7 — Notifications et automatisation;STORY 7.4 — Sanctions automatiques;En tant que plateforme j'applique automatiquement les sanctions liées aux annulations;Critique;backend,compliance;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Créer job contrôle annulations tardives;Détecter les annulations hors délai;Critique;backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Appliquer suspension 7 jours;Mettre à jour le compte du chauffeur;Critique;backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Appliquer radiation au troisième cas;Déclencher la radiation automatique;Critique;backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Notifier chauffeur sanctionné;Envoyer un mail explicatif;Haute;notifications,backend;Développeur Full-Stack
+Task;EPIC 7 — Notifications et automatisation;Afficher sanction dans back office;Rendre visible la mesure côté admin;Haute;admin,backend,frontend;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 8 — Facturation et export comptable;Automatiser la génération de factures et les exports de suivi financier;Haute;mvp,billing,backend,admin;Développeur Full-Stack
+Story;EPIC 8 — Facturation et export comptable;STORY 8.1 — Données financières mission;En tant que plateforme je calcule les montants liés à chaque mission;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Définir modèle montant facturé entreprise;Spécifier la donnée facturable côté société;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Définir modèle montant reversé chauffeur;Spécifier la donnée de reversement;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Définir calcul marge;Calculer l'écart entre facture et reversement;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Gérer cas mission annulée;Définir le comportement financier des annulations;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Gérer cas mission validée;Définir le comportement financier des missions exécutées;Critique;billing,backend;Développeur Full-Stack
+Story;EPIC 8 — Facturation et export comptable;STORY 8.2 — Facture hebdomadaire;En tant qu'entreprise je reçois une facture hebdomadaire récapitulative;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Créer job hebdomadaire facturation;Planifier la génération des factures;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Regrouper missions validées par entreprise;Consolider les missions facturables;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Générer numéro de facture;Créer un identifiant unique de facture;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Générer PDF facture;Produire le document final;Critique;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Stocker facture;Sauvegarder le PDF généré;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Rendre facture téléchargeable;Exposer le document à l'utilisateur concerné;Haute;billing,frontend,backend;Développeur Full-Stack
+Story;EPIC 8 — Facturation et export comptable;STORY 8.3 — Export comptable;En tant qu'administrateur je peux exporter les données de facturation;Haute;billing,admin;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Générer export CSV;Créer le fichier comptable CSV;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Générer export Excel;Créer le fichier comptable Excel;Normale;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Inclure facture mission dates montants;Définir les colonnes utiles à la comptabilité;Haute;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Tester format comptable;Vérifier l'exploitabilité par le comptable;Normale;billing,quality;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Ajouter téléchargement admin;Permettre l'export côté back office;Haute;billing,admin,frontend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Ajouter téléchargement entreprise si besoin;Prévoir l'accès société selon périmètre retenu;Normale;billing,frontend;Développeur Full-Stack
+Story;EPIC 8 — Facturation et export comptable;STORY 8.4 — Marge admin;En tant qu'administrateur je peux visualiser la marge générée;Normale;billing,admin;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Calculer marge par mission;Produire la marge unitaire;Normale;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Calculer marge hebdomadaire;Produire l'agrégat sur la semaine;Normale;billing,backend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Afficher marge dans dashboard admin;Exposer l'indicateur dans le back office;Normale;billing,admin,frontend;Développeur Full-Stack
+Task;EPIC 8 — Facturation et export comptable;Prévoir filtre par période;Permettre l'analyse temporelle;Normale;billing,frontend,backend;Développeur Full-Stack
+;;;;;;
+Epic;;EPIC 9 — QA recette et lancement;Tester stabiliser et déployer le MVP Vectura;Critique;mvp,qa,deploy;Toi / PO
+Story;EPIC 9 — QA recette et lancement;STORY 9.1 — QA fonctionnelle;En tant qu'équipe projet nous validons les parcours métier clés;Critique;qa;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester inscription chauffeur;Vérifier le parcours complet d'inscription;Critique;qa,frontend,backend;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester inscription entreprise;Vérifier le parcours société;Critique;qa,frontend,backend;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester login logout;Vérifier les accès et déconnexions;Critique;qa,security;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester upload documents;Vérifier le dépôt et la validation de fichiers;Critique;qa,compliance;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester validation admin;Vérifier les actions du back office;Critique;qa,admin;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester création mission;Vérifier la publication côté entreprise;Critique;qa;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester matching;Vérifier la cohérence des missions visibles;Critique;qa;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester annulation tardive;Vérifier suspension et compteur;Critique;qa,compliance;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester facturation;Vérifier calculs et génération;Haute;qa,billing;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Tester exports;Vérifier téléchargement et format;Normale;qa,billing;Toi / PO
+Story;EPIC 9 — QA recette et lancement;STORY 9.2 — QA sécurité;En tant qu'équipe projet nous validons les protections minimales du produit;Critique;qa,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester accès non autorisés;Vérifier que chaque rôle reste à sa place;Critique;qa,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester rôles et permissions;Vérifier les habilitations fonctionnelles;Critique;qa,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester upload malveillant;Vérifier les contrôles de sécurité;Critique;qa,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester erreurs API;Vérifier les retours et logs;Haute;qa,backend;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester limites taille fichier;Vérifier le contrôle anti abus;Haute;qa,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Tester journalisation incidents;Vérifier la traçabilité sécurité;Normale;qa,security,infra;Admin Système
+Story;EPIC 9 — QA recette et lancement;STORY 9.3 — Préproduction;En tant qu'équipe projet nous validons l'environnement de staging avant production;Critique;deploy,infra;Admin Système
+Task;EPIC 9 — QA recette et lancement;Déployer staging;Créer la préproduction complète;Critique;infra,deploy;Admin Système
+Task;EPIC 9 — QA recette et lancement;Injecter données de test;Préparer un jeu de test réaliste;Haute;infra,qa;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier mails automatiques;Contrôler les notifications avant production;Haute;notifications,qa;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier cron jobs;Contrôler les tâches planifiées;Critique;infra,qa;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier sauvegardes;Contrôler la stratégie de backup;Critique;infra,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier performance minimale;Contrôler la tenue de la plateforme;Normale;infra,performance;Admin Système
+Story;EPIC 9 — QA recette et lancement;STORY 9.4 — Production;En tant qu'équipe projet nous mettons en ligne le MVP;Critique;deploy,infra;Admin Système
+Task;EPIC 9 — QA recette et lancement;Déployer production;Mettre en ligne la plateforme;Critique;infra,deploy;Admin Système
+Task;EPIC 9 — QA recette et lancement;Configurer domaine final;Brancher le nom de domaine officiel;Critique;infra;Admin Système
+Task;EPIC 9 — QA recette et lancement;Activer SSL final;Sécuriser l'accès HTTPS;Critique;infra,security;Admin Système
+Task;EPIC 9 — QA recette et lancement;Exécuter migrations production;Mettre à jour la base de prod;Critique;infra,database;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier monitoring;Confirmer la supervision après mise en ligne;Haute;infra,monitoring;Admin Système
+Task;EPIC 9 — QA recette et lancement;Vérifier disponibilité publique;Tester le service côté utilisateur réel;Critique;infra,qa;Toi / PO
+Story;EPIC 9 — QA recette et lancement;STORY 9.5 — Stabilisation;En tant qu'équipe projet nous corrigeons et priorisons l'après lancement;Haute;qa,product;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Corriger bugs post lancement;Traiter les incidents des premiers jours;Critique;qa,bugfix;Développeur Full-Stack
+Task;EPIC 9 — QA recette et lancement;Suivre erreurs critiques;Analyser les erreurs prioritaires;Critique;monitoring,qa;Admin Système
+Task;EPIC 9 — QA recette et lancement;Ajuster UX selon retours terrain;Améliorer les écrans selon usage réel;Normale;ux,product;UI/UX Designer
+Task;EPIC 9 — QA recette et lancement;Ajuster règles métier si besoin;Faire évoluer les règles opérationnelles;Normale;product,backend;Toi / PO
+Task;EPIC 9 — QA recette et lancement;Prioriser V1 après MVP;Préparer la roadmap après lancement;Normale;product;Toi / PO

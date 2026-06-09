@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: vectura
+      POSTGRES_USER: vectura
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./uploads:/app/uploads
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://vectura:${DB_PASSWORD}@postgres:5432/vectura
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-15m}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION:-7d}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - MATCHING_MAX_RADIUS_KM=${MATCHING_MAX_RADIUS_KM:-50}
+      - MIN_RATE_PL=${MIN_RATE_PL:-25}
+      - MIN_RATE_SPL=${MIN_RATE_SPL:-30}
+      - PLATFORM_MARGIN_PERCENT=${PLATFORM_MARGIN_PERCENT:-15}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-10}
+      - UPLOAD_DIR=/app/uploads
+      - NODE_ENV=${NODE_ENV:-development}
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000/api}
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
