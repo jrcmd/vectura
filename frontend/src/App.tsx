@@ -1,11 +1,24 @@
 import React from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-export default function App() {
+import LandingPublic from './pages/LandingPublic';
+import InscriptionChauffeur from './pages/InscriptionChauffeur';
+import InscriptionEntreprise from './pages/InscriptionEntreprise';
+
+export default function App(): JSX.Element {
   return (
-    <div className="min-h-screen bg-white text-black">
-      <header className="p-4 border-b">Vectura (frontend skeleton)</header>
-      <main className="p-4">Initialisation en cours…</main>
-    </div>
+    <Routes>
+      {/* Landing publique */}
+      <Route path="/" element={<LandingPublic />} />
+
+      {/* Pages placeholders pour relier les CTA acquisition */}
+      <Route path="/inscription/chauffeur" element={<InscriptionChauffeur />} />
+      <Route path="/inscription/entreprise" element={<InscriptionEntreprise />} />
+
+      {/* Redirection par défaut */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
+
 
