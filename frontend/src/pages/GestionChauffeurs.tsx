@@ -97,6 +97,7 @@ export default function GestionChauffeurs(): JSX.Element {
                   <th className="px-4 py-3">Ville</th>
                   <th className="px-4 py-3">Statut</th>
                   <th className="px-4 py-3">Qualifications</th>
+                  <th className="px-4 py-3">Dossier</th>
                   <th className="px-4 py-3">Inscription</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>

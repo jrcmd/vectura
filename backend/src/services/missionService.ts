@@ -1,7 +1,8 @@
-import { PrismaClient, MissionStatus } from '@prisma/client';
+import { MissionStatus } from '@prisma/client';
 import { createBillingForMission } from './billingService';
+import prisma from '../lib/prisma';
 
-const prisma = new PrismaClient();
+
 
 export async function getMissionWithRelations(missionId: string) {
   return prisma.mission.findUnique({
@@ -25,6 +26,7 @@ export async function assignDriverToMission(missionId: string, driverId: string)
       status: MissionStatus.POURVUE,
       driverId,
       assignedAt: new Date(),
+      acceptedAt: new Date(),
     },
   });
 

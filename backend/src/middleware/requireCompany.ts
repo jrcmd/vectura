@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { Role, UserStatus } from '@prisma/client';
+import { Role } from '@prisma/client';
+import prisma from '../lib/prisma';
 
-export function requireCompany(req: Request, res: Response, next: NextFunction) {
+export async function requireCompany(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return res.status(401).json({ ok: false, message: 'Token manquant' });
@@ -10,24 +11,34 @@ export function requireCompany(req: Request, res: Response, next: NextFunction) 
 
   const token = header.slice(7);
 
+  let payload: { sub: string; role: Role };
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
+    payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
       sub: string;
       role: Role;
-      status: UserStatus;
     };
-
-    if (payload.role !== Role.ENTREPRISE) {
-      return res.status(403).json({ ok: false, message: 'Accès réservé aux entreprises' });
-    }
-
-    if (payload.status === UserStatus.SUSPENDU || payload.status === UserStatus.RADIE) {
-      return res.status(403).json({ ok: false, message: 'Compte non autorisé' });
-    }
-
-    (req as unknown as { companyId: string }).companyId = payload.sub;
-    next();
   } catch {
     return res.status(401).json({ ok: false, message: 'Token invalide' });
   }
+
+  if (payload.role !== Role.ENTREPRISE) {
+    return res.status(403).json({ ok: false, message: 'Accès réservé aux entreprises' });
+  }
+
+  // Db lookup blocks timing-attack and ensures the account is active
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    select: { id: true, status: true },
+  });
+
+  if (!user) {
+    return res.status(401).json({ ok: false, message: 'Utilisateur introuvable' });
+  }
+
+  if (user.status === 'SUSPENDU' || user.status === 'RADIE') {
+    return res.status(403).json({ ok: false, message: 'Compte non autorisé' });
+  }
+
+  (req as unknown as { companyId: string }).companyId = user.id;
+  next();
 }

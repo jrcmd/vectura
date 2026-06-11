@@ -1,18 +1,25 @@
-import { PrismaClient, Role, UserStatus, DocStatus, DocType, TruckType, MissionStatus } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import { Role, UserStatus, DocType, DocStatus, MissionStatus, TruckType } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '../src/lib/prisma';
+import { hashPassword } from '../src/lib/password';
+
+const PASSWORD_HASH = hashPassword('password123');
 
 async function main() {
-  const passwordHash = await bcrypt.hash('password123', 12);
 
   // Admin
   const admin = await prisma.user.upsert({
     where: { email: 'admin@vectura.fr' },
-    update: {},
+    update: {
+      password: PASSWORD_HASH,
+      role: Role.ADMIN,
+      status: UserStatus.VALIDE,
+      firstName: 'Admin',
+      lastName: 'Vectura',
+    },
     create: {
       email: 'admin@vectura.fr',
-      password: passwordHash,
+      password: PASSWORD_HASH,
       role: Role.ADMIN,
       status: UserStatus.VALIDE,
       firstName: 'Admin',
@@ -23,10 +30,16 @@ async function main() {
   // Company
   const companyUser = await prisma.user.upsert({
     where: { email: 'company@vectura.fr' },
-    update: {},
+    update: {
+      password: PASSWORD_HASH,
+      role: Role.ENTREPRISE,
+      status: UserStatus.VALIDE,
+      firstName: 'Société',
+      lastName: 'Démo',
+    },
     create: {
       email: 'company@vectura.fr',
-      password: passwordHash,
+      password: PASSWORD_HASH,
       role: Role.ENTREPRISE,
       status: UserStatus.VALIDE,
       firstName: 'Société',
@@ -45,10 +58,18 @@ async function main() {
   // Drivers
   const driverValidated = await prisma.user.upsert({
     where: { email: 'driver_valid@vectura.fr' },
-    update: {},
+    update: {
+      password: PASSWORD_HASH,
+      role: Role.CHAUFFEUR,
+      status: UserStatus.VALIDE,
+      firstName: 'Paul',
+      lastName: 'Validé',
+      phone: '0600000001',
+      city: 'Paris',
+    },
     create: {
       email: 'driver_valid@vectura.fr',
-      password: passwordHash,
+      password: PASSWORD_HASH,
       role: Role.CHAUFFEUR,
       status: UserStatus.VALIDE,
       firstName: 'Paul',
@@ -70,10 +91,18 @@ async function main() {
 
   const driverPending = await prisma.user.upsert({
     where: { email: 'driver_pending@vectura.fr' },
-    update: {},
+    update: {
+      password: PASSWORD_HASH,
+      role: Role.CHAUFFEUR,
+      status: UserStatus.EN_ATTENTE,
+      firstName: 'Camille',
+      lastName: 'En attente',
+      phone: '0600000002',
+      city: 'Lyon',
+    },
     create: {
       email: 'driver_pending@vectura.fr',
-      password: passwordHash,
+      password: PASSWORD_HASH,
       role: Role.CHAUFFEUR,
       status: UserStatus.EN_ATTENTE,
       firstName: 'Camille',
@@ -221,4 +250,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-

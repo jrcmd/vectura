@@ -1,10 +1,13 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, DocStatus, DocType, MissionStatus, UserStatus, SanctionType } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { DocStatus, DocType, MissionStatus, UserStatus, SanctionType } from '@prisma/client';
 import { requireDriver } from './authRoutes';
+import { assignDriverToMission } from '../services/missionService';
+import { createBillingForMission } from '../services/billingService';
 import { findCompatibleMissions } from '../services/matchingService';
 
-const prisma = new PrismaClient();
+
 
 const acceptMissionSchema = z.object({ missionId: z.string().min(1) });
 const cancelMissionSchema = z.object({ missionId: z.string().min(1), reason: z.string().max(500).optional() });
@@ -176,47 +179,30 @@ export function registerDriverRoutes(app: Application) {
       if (!mission) {
         return res.status(404).json({ ok: false, message: 'Mission introuvable' });
       }
-
       if (mission.status !== MissionStatus.OUVERTE) {
         return res.status(400).json({ ok: false, message: 'Mission non disponible' });
       }
-
-      const missionDate = mission.missionDate;
-      if (missionDate.getTime() <= Date.now()) {
+      if (mission.missionDate.getTime() <= Date.now()) {
         return res.status(400).json({ ok: false, message: 'Mission déjà passée' });
       }
 
-      const updated = await prisma.mission.update({
-        where: { id: missionId },
-        data: {
-          status: MissionStatus.POURVUE,
-          driverId,
-          assignedAt: new Date(),
-          acceptedAt: new Date(),
-        },
-        select: {
-          id: true,
-          status: true,
-          driverId: true,
-          assignedAt: true,
-        },
-      });
-
-      await prisma.missionStatusHistory.create({
-        data: {
-          missionId: updated.id,
-          status: MissionStatus.POURVUE,
-          changedBy: driverId,
-          reason: 'ACCEPTED_BY_DRIVER',
-        },
-      });
+      const updated = await assignDriverToMission(missionId, driverId);
+      await createBillingForMission(missionId);
 
       return res.status(200).json({ ok: true, mission: updated });
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ ok: false, message: 'Requête invalide', errors: err.flatten() });
       }
-
+      if (err instanceof Error && err.message === 'MISSION_NOT_FOUND') {
+        return res.status(404).json({ ok: false, message: 'Mission introuvable' });
+      }
+      if (err instanceof Error && err.message === 'MISSION_NOT_AVAILABLE') {
+        return res.status(400).json({ ok: false, message: 'Mission non disponible' });
+      }
+      if (err instanceof Error && err.message === 'MISSION_ALREADY_ASSIGNED') {
+        return res.status(400).json({ ok: false, message: 'Mission déjà attribuée' });
+      }
       return res.status(500).json({ ok: false, message: 'Erreur interne' });
     }
   });
@@ -282,7 +268,7 @@ export function registerDriverRoutes(app: Application) {
                 })
               : prisma.user.update({
                   where: { id: driverId },
-                  data: { status: shouldBan ? UserStatus.RADIE : UserStatus.SUSPENDU },
+                  data: { status: UserStatus.SUSPENDU },
                 }),
             prisma.sanction.create({
               data: {

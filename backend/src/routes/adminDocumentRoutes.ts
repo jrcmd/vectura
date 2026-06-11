@@ -1,9 +1,11 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, DocStatus } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { DocStatus } from '@prisma/client';
 import { requireAdmin } from '../middleware/requireAdmin';
+import { sendMail } from '../services/mailService';
 
-const prisma = new PrismaClient();
+
 
 const validateSchema = z.object({ documentId: z.string().min(1) });
 const rejectSchema = z.object({ documentId: z.string().min(1), reason: z.string().max(500).optional() });
@@ -48,7 +50,34 @@ export function registerAdminDocumentRoutes(app: Application) {
       const doc = await prisma.document.update({
         where: { id: documentId },
         data: { status: DocStatus.VALIDE, validatedAt: new Date(), validatedBy: adminId, rejectionReason: null },
-        select: { id: true, status: true, validatedAt: true, validatedBy: true },
+        select: { id: true, status: true, validatedAt: true, validatedBy: true, userId: true },
+      });
+
+      const user = await prisma.user.findUnique({
+        where: { id: doc.userId },
+        select: { id: true, email: true, firstName: true },
+      });
+
+      if (user?.email) {
+        try {
+          await sendMail({
+            to: user.email,
+            subject: 'Document validé',
+            text: `Bonjour ${user.firstName ?? ''}, votre document a été validé.`,
+          });
+        } catch (mailErr) {
+          console.error('[DOC] validation mail failed', user.id, mailErr);
+        }
+      }
+
+      await prisma.notificationLog.create({
+        data: {
+          type: 'DOC_VALIDATED',
+          recipientId: doc.userId,
+          email: user?.email ?? 'unknown',
+          subject: 'Document validé',
+          status: 'sent',
+        },
       });
 
       return res.status(200).json({ ok: true, document: doc });
@@ -68,7 +97,35 @@ export function registerAdminDocumentRoutes(app: Application) {
       const doc = await prisma.document.update({
         where: { id: documentId },
         data: { status: DocStatus.REJETE, validatedAt: new Date(), validatedBy: adminId, rejectionReason: reason ?? null },
-        select: { id: true, status: true, validatedAt: true, validatedBy: true, rejectionReason: true },
+        select: { id: true, status: true, validatedAt: true, validatedBy: true, rejectionReason: true, userId: true },
+      });
+
+      const user = await prisma.user.findUnique({
+        where: { id: doc.userId },
+        select: { id: true, email: true, firstName: true },
+      });
+
+      if (user?.email) {
+        try {
+          await sendMail({
+            to: user.email,
+            subject: 'Document rejeté',
+            text: `Bonjour ${user.firstName ?? ''}, votre document a été rejeté${reason ? ` : ${reason}` : ''}.`,
+          });
+        } catch (mailErr) {
+          console.error('[DOC] rejection mail failed', user.id, mailErr);
+        }
+      }
+
+      await prisma.notificationLog.create({
+        data: {
+          type: 'DOC_REJECTED',
+          recipientId: doc.userId,
+          email: user?.email ?? 'unknown',
+          subject: 'Document rejeté',
+          status: 'sent',
+          error: reason ?? null,
+        },
       });
 
       return res.status(200).json({ ok: true, document: doc });

@@ -1,8 +1,9 @@
-import { PrismaClient, MissionStatus, TruckType, UserStatus } from '@prisma/client';
+import { MissionStatus, TruckType, UserStatus } from '@prisma/client';
 import { evaluateDriverQualification } from './qualificationService';
+import prisma from '../lib/prisma';
 import { getMaxRadiusKm, haversineDistanceKm } from './distanceService';
 
-const prisma = new PrismaClient();
+
 
 export type MissionMatch = {
   id: string;

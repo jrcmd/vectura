@@ -1,10 +1,11 @@
 import type { Application, Request, Response } from 'express';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import prisma from '../lib/prisma';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { hashPassword } from '../lib/password';
 
-const prisma = new PrismaClient();
+
+
 
 const forgotSchema = z.object({ email: z.string().email() });
 const resetSchema = z.object({
@@ -53,7 +54,7 @@ export function registerPasswordResetRoutes(app: Application) {
         return res.status(400).json({ ok: false, message: 'Lien invalide ou expiré.' });
       }
 
-      const passwordHash = await bcrypt.hash(password, 12);
+      const passwordHash = hashPassword(password);
 
       await prisma.$transaction([
         prisma.user.update({

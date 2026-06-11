@@ -1,6 +1,7 @@
-import { PrismaClient, DocType, DocStatus } from '@prisma/client';
+import { DocType, DocStatus } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
+
 
 export type DriverQualification = {
   hasPermisC: boolean;
@@ -63,20 +64,27 @@ export async function evaluateDriverQualification(userId: string): Promise<Drive
 
   const permisC = docsByType.get(DocType.PERMIS_C);
   const permisCE = docsByType.get(DocType.PERMIS_CE);
+  const adrDoc = docsByType.get(DocType.ADR);
+  const frigoDoc = docsByType.get(DocType.FRIGO);
+  const hasADR = adrDoc?.status === DocStatus.VALIDE;
+  const hasFrigo = frigoDoc?.status === DocStatus.VALIDE;
 
   await prisma.driverProfile.update({
     where: { userId },
     data: {
-      hasPermisC: (permisC?.status === DocStatus.VALIDE),
-      hasPermisCE: (permisCE?.status === DocStatus.VALIDE),
+      hasPermisC: permisC?.status === DocStatus.VALIDE,
+      hasPermisCE: permisCE?.status === DocStatus.VALIDE,
+      hasADR,
+      hasFrigo,
+      qualificationsValid,
     },
   });
 
   return {
-    hasPermisC: (permisC?.status === DocStatus.VALIDE),
-    hasPermisCE: (permisCE?.status === DocStatus.VALIDE),
-    hasADR: false,
-    hasFrigo: false,
+    hasPermisC: permisC?.status === DocStatus.VALIDE,
+    hasPermisCE: permisCE?.status === DocStatus.VALIDE,
+    hasADR,
+    hasFrigo,
     qualificationsValid,
     blockingDocuments,
   };

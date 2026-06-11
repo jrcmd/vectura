@@ -27,6 +27,9 @@ export default function LandingPublic(): JSX.Element {
             <a href="#confiance" className="hover:text-blue-700">
               Confiance
             </a>
+            <button type="button" onClick={() => navigate('/qa/functional')} className="text-sm text-blue-700 hover:text-blue-800">
+              QA
+            </button>
           </nav>
 
           <a

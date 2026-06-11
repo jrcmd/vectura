@@ -24,7 +24,7 @@ cd vectura
 cp .env.example .env
 
 # Démarrer les services
-docker-compose up -d
+docker compose up -d
 
 # Installer les dépendances backend
 cd backend && npm install
@@ -108,6 +108,10 @@ npm run build
 npm run lint
 npm run typecheck
 npm test
+
+# Déploiement
+./scripts/deploy-staging.sh
+./scripts/deploy-production.sh
 ```
 
 ## CI/CD
@@ -120,7 +124,24 @@ Pipeline GitHub Actions configuré dans `.github/workflows/ci.yml` :
 ## API Endpoints
 
 - `GET /api/health` - Health check
-- `POST /api/register` - Inscription chauffeur
-- `POST /api/login` - Connexion chauffeur
-- `GET /api/missions` - Liste des missions (chauffeur)
-- `POST /api/missions` - Création mission (entreprise)
+- `POST /api/drivers/register` - Inscription chauffeur
+- `POST /api/companies/register` - Inscription entreprise
+- `POST /api/auth/login` - Connexion chauffeur
+- `POST /api/companies/login` - Connexion entreprise
+- `POST /api/documents/upload` - Upload document chauffeur
+- `GET /api/driver/missions` - Missions compatibles chauffeur
+- `POST /api/companies/missions` - Création mission entreprise
+- `GET /api/admin/kpis` - KPI back office
+- `PATCH /api/admin/documents/validate` - Validation document admin
+- `PATCH /api/admin/documents/reject` - Rejet document admin
+- `GET /api/billing/invoices` - Factures chauffeur
+- `GET /api/companies/billing/invoices` - Factures entreprise
+- `GET /api/admin/billing/export/csv` - Export comptable admin
+- `GET /api/qa/functional` - Résumé des parcours fonctionnels QA (admin)
+- `GET /api/qa/security` - Résumé des contrôles sécurité QA (admin)
+- `POST /api/qa/seed` - Injecte un jeu de données de recette (admin)
+- `GET /api/admin/audit/events` - Journal des événements sécurité
+- `GET /api/admin/audit/incidents` - Incidents post-lancement
+- `GET /api/admin/monitoring/jobs` - État des cron jobs
+- `POST /api/admin/monitoring/backups/run` - Lance une sauvegarde
+- `GET /api/admin/monitoring/production` - Pré-check production

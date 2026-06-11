@@ -1,10 +1,11 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, BillingStatus, Prisma } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { BillingStatus, Prisma } from '@prisma/client';
 import { requireAdmin } from '../middleware/requireAdmin';
 import { getWeekStart } from '../services/invoiceService';
 
-const prisma = new PrismaClient();
+
 
 const periodSchema = z.object({
   from: z.string().datetime().optional(),

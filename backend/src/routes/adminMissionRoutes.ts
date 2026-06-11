@@ -1,10 +1,11 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, MissionStatus } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { MissionStatus } from '@prisma/client';
 import { requireAdmin } from '../middleware/requireAdmin';
 import { sendMail } from '../services/mailService';
 
-const prisma = new PrismaClient();
+
 
 const missionQuerySchema = z.object({
   status: z.enum(['OUVERTE', 'POURVUE', 'TERMINEE', 'ANNULEE']).optional(),
@@ -34,14 +35,31 @@ export function registerAdminMissionRoutes(app: Application) {
       if (query.driverId) where.driverId = query.driverId;
 
       const [openMissions, assignedMissions, pastMissions] = await Promise.all([
-        prisma.mission.count({ where: { ...where, status: MissionStatus.OUVERTE } }),
-        prisma.mission.count({ where: { ...where, status: MissionStatus.POURVUE } }),
-        prisma.mission.count({ where: { ...where, status: { in: [MissionStatus.TERMINEE, MissionStatus.ANNULEE] } } }),
+        prisma.mission.findMany({
+          where: { ...where, status: MissionStatus.OUVERTE },
+          orderBy: { missionDate: 'asc' },
+          select: { id: true, title: true, description: true, location: true, missionDate: true, startTime: true, endTime: true, truckType: true, hourlyRate: true, status: true, creatorId: true, creator: { select: { companyProfile: { select: { companyName: true } } } }, driver: { select: { firstName: true, lastName: true } } },
+        }),
+        prisma.mission.findMany({
+          where: { ...where, status: MissionStatus.POURVUE },
+          orderBy: { missionDate: 'asc' },
+          select: { id: true, title: true, description: true, location: true, missionDate: true, startTime: true, endTime: true, truckType: true, hourlyRate: true, status: true, creatorId: true, creator: { select: { companyProfile: { select: { companyName: true } } } }, driver: { select: { firstName: true, lastName: true } } },
+        }),
+        prisma.mission.findMany({
+          where: { ...where, status: { in: [MissionStatus.TERMINEE, MissionStatus.ANNULEE] } },
+          orderBy: { missionDate: 'desc' },
+          select: { id: true, title: true, description: true, location: true, missionDate: true, startTime: true, endTime: true, truckType: true, hourlyRate: true, status: true, creatorId: true, creator: { select: { companyProfile: { select: { companyName: true } } } }, driver: { select: { firstName: true, lastName: true } } },
+        }),
       ]);
 
       return res.status(200).json({
         ok: true,
         counts: {
+          open: openMissions.length,
+          assigned: assignedMissions.length,
+          past: pastMissions.length,
+        },
+        missions: {
           open: openMissions,
           assigned: assignedMissions,
           past: pastMissions,

@@ -1,6 +1,8 @@
-import { PrismaClient, MissionStatus } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { MissionStatus } from '@prisma/client';
+import cron from 'node-cron';
+import prisma from '../lib/prisma';
+import { generateInvoiceForCompanyWeek } from '../services/invoiceService';
+import { recordCronRun } from './monitoringService';
 
 const DEFAULT_PLATFORM_MARGIN_PERCENT = 15;
 
@@ -18,9 +20,7 @@ function parseTimeToHours(time: string): number {
 
 export function calculateMissionAmount(hourlyRate: number, startTime: string, endTime?: string): number {
   const startHours = parseTimeToHours(startTime);
-  if (!endTime) {
-    return hourlyRate;
-  }
+  if (!endTime) return hourlyRate;
   const endHours = parseTimeToHours(endTime);
   const duration = endHours - startHours;
   if (duration <= 0) return hourlyRate;
@@ -51,11 +51,7 @@ export async function createBillingForMission(missionId: string): Promise<{
   if (!mission) return null;
 
   if (mission.status === MissionStatus.ANNULEE) {
-    return {
-      amountBilled: 0,
-      amountDriver: 0,
-      margin: 0,
-    };
+    return { amountBilled: 0, amountDriver: 0, margin: 0 };
   }
 
   const amountBilled = calculateMissionAmount(mission.hourlyRate, mission.startTime, mission.endTime ?? undefined);
@@ -72,11 +68,7 @@ export async function createBillingForMission(missionId: string): Promise<{
       weekStart: getWeekStart(mission.missionDate),
       weekEnd: getWeekEnd(mission.missionDate),
     },
-    update: {
-      amountBilled,
-      amountDriver,
-      margin,
-    },
+    update: { amountBilled, amountDriver, margin },
   });
 
   return { amountBilled, amountDriver, margin };
@@ -127,4 +119,40 @@ export async function getWeeklyBillingSummary(companyId: string, weekStart: Date
     weekStart: b.weekStart,
     weekEnd: b.weekEnd,
   }));
+}
+
+export function startWeeklyBillingCron() {
+  // Every Monday at 00:05 — generates invoices for all companies with billed missions
+  cron.schedule('5 0 * * 1', async () => {
+    const started = Date.now();
+    try {
+      const weekStart = getWeekStart(new Date());
+      const weekEnd = getWeekEnd(weekStart);
+
+      const billings = await prisma.billing.findMany({
+        where: { weekStart: { gte: weekStart }, weekEnd: { lte: weekEnd } },
+        select: { missionId: true },
+      });
+
+      const missions = await prisma.mission.findMany({
+        where: { id: { in: billings.map((b) => b.missionId) } },
+        select: { id: true, creatorId: true },
+      });
+
+      const companyIds = Array.from(new Set(missions.map((m) => m.creatorId).filter((id): id is string => !!id)));
+
+      for (const companyId of companyIds) {
+        try {
+          await generateInvoiceForCompanyWeek(companyId, weekStart);
+        } catch (err) {
+          console.error(`[CRON] weekly billing failed for company ${companyId}`, err);
+        }
+      }
+    } catch (err) {
+      console.error('[CRON] weekly billing cron failed', err);
+      await recordCronRun({ name: 'weekly_billing_cron', status: 'FAILED', durationMs: Date.now() - started, error: err instanceof Error ? err.message : 'Unknown error' });
+      return;
+    }
+    await recordCronRun({ name: 'weekly_billing_cron', status: 'SUCCESS', durationMs: Date.now() - started, error: null });
+  });
 }

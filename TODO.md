@@ -1724,13 +1724,13 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 ```
 
 #### ✅ Checklist de validation
-- [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker-compose up` démarre sans erreur
-- [ ] Les routes API répondent correctement (test via Postman/curl)
-- [ ] L'interface s'affiche correctement dans le navigateur
-- [ ] Aucune erreur TypeScript (`npm run type-check`)
-- [ ] Aucune erreur ESLint (`npm run lint`)
-- [ ] Les tests passent (`npm test`)
+- [ ✅] Tous les fichiers générés sont copiés dans le projet
+- [✅ ] `docker-compose up` démarre sans erreur
+- [✅ ] Les routes API répondent correctement (test via Postman/curl)
+- [✅ ] L'interface s'affiche correctement dans le navigateur
+- [ ✅] Aucune erreur TypeScript (`npm run type-check`)
+- [✅ ] Aucune erreur ESLint (`npm run lint`)
+- [✅ ] Les tests passent (`npm test`)
 
 ---
 

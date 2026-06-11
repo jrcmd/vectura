@@ -1,8 +1,7 @@
 import type { Application, Request, Response } from 'express';
-import { PrismaClient, MissionStatus, UserStatus, DocStatus } from '@prisma/client';
+import { MissionStatus, UserStatus, DocStatus } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { requireAdmin } from '../middleware/requireAdmin';
-
-const prisma = new PrismaClient();
 
 export function registerAdminRoutes(app: Application) {
   app.get('/api/admin/kpis', requireAdmin, async (req: Request, res: Response) => {
@@ -35,6 +34,46 @@ export function registerAdminRoutes(app: Application) {
           expiringDocuments: expiringDocumentsCount,
           weeklyRevenue: weeklyRevenue._sum.hourlyRate ?? 0,
         },
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ ok: false, message: 'Erreur interne' });
+    }
+  });
+
+  app.get('/api/admin/sanctions', requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const page = parseInt((req.query.page as string) ?? '1', 10);
+      const limit = parseInt((req.query.limit as string) ?? '20', 10);
+      const skip = (page - 1) * limit;
+
+      const [sanctions, total] = await Promise.all([
+        prisma.sanction.findMany({
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            driver: {
+              select: { id: true, firstName: true, lastName: true, email: true, status: true },
+            },
+          },
+        }),
+        prisma.sanction.count(),
+      ]);
+
+      const sanctionsWithMission = await Promise.all(
+        sanctions.map(async (s) => ({
+          ...s,
+          missionId: s.missionId,
+        })),
+      );
+
+      return res.status(200).json({
+        ok: true,
+        sanctions: sanctionsWithMission,
+        total,
+        page,
+        limit,
       });
     } catch (err) {
       console.error(err);

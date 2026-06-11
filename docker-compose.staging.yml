@@ -1,0 +1,72 @@
+services:
+  postgres-staging:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: vectura
+      POSTGRES_USER: vectura
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    networks:
+      - vectura-staging
+
+  redis-staging:
+    image: redis:7-alpine
+    networks:
+      - vectura-staging
+
+  backend-staging:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://vectura:${DB_PASSWORD}@postgres-staging:5432/vectura
+      REDIS_URL: redis://redis-staging:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      FROM_EMAIL: ${FROM_EMAIL}
+      DOMAIN: ${DOMAIN:-staging.vectura.local}
+      SSL_MODE: ${SSL_MODE:-external}
+      API_BASE_URL: ${API_BASE_URL:-https://api-staging.vectura.local/api}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-https://staging.vectura.local}
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-10}
+      UPLOAD_DIR: /app/uploads
+      INVOICE_DIR: /app/uploads/invoices
+      BACKUP_DIR: /app/backups
+      BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
+      BACKUP_USE_METADATA_ONLY: ${BACKUP_USE_METADATA_ONLY:-false}
+      NODE_ENV: staging
+    depends_on:
+      - postgres-staging
+      - redis-staging
+    volumes:
+      - staging_uploads:/app/uploads
+      - staging_backups:/app/backups
+    networks:
+      - vectura-staging
+    ports:
+      - "${BACKEND_PORT:-3001}:3000"
+
+  frontend-staging:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-https://api-staging.vectura.local/api}
+    depends_on:
+      - backend-staging
+    networks:
+      - vectura-staging
+    ports:
+      - "${FRONTEND_PORT:-5174}:4173"
+
+volumes:
+  postgres_staging_data:
+  staging_uploads:
+  staging_backups:
+
+networks:
+  vectura-staging:

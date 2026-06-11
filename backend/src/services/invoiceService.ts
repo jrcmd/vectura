@@ -1,8 +1,9 @@
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
-import { PrismaClient, BillingStatus, MissionStatus } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { BillingStatus, MissionStatus } from '@prisma/client';
 
-const prisma = new PrismaClient();
+
 
 const INVOICE_DIR = path.resolve(process.env.INVOICE_DIR ?? './uploads/invoices');
 
@@ -292,6 +293,10 @@ export async function generateInvoiceForCompanyWeek(companyId: string, weekStart
   const weekStart = weekStartInput ? getWeekStart(weekStartInput) : getWeekStart(new Date());
   const weekEnd = getWeekEnd(weekStart);
   const items = await getInvoiceItems(companyId, weekStart, weekEnd);
+
+  if (items.length === 0) {
+    throw new Error('Aucune mission facturable pour cette semaine.');
+  }
   const existingInvoice = await prisma.invoice.findUnique({
     where: { companyId_weekStart: { companyId, weekStart } },
     select: { invoiceNumber: true },

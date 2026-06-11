@@ -1,9 +1,10 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient, TruckType, MissionStatus } from '@prisma/client';
+import prisma from '../lib/prisma';
+import { TruckType, MissionStatus } from '@prisma/client';
 import { requireCompany } from '../middleware/requireCompany';
 
-const prisma = new PrismaClient();
+
 
 const createMissionSchema = z.object({
   title: z.string().min(2).max(200),

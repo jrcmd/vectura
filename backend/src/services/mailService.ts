@@ -1,4 +1,6 @@
-type SendMailOptions = {
+import nodemailer, { type Transporter, type SentMessageInfo } from 'nodemailer';
+
+type SendMailInput = {
   to: string;
   subject: string;
   html?: string;
@@ -11,32 +13,103 @@ type SendResult = {
   error?: string;
 };
 
-const TEMPLATES: Record<string, (vars: Record<string, string>) => string> = {
-  DOCUMENT_EXPIRY: ({ firstName }) =>
-    `Bonjour ${firstName},\n\nVotre document va bientôt expirer. Veuillez renouveler votre pièce dans votre espace chauffeur.`,
-  MISSION_REMINDER_J_MINUS_1: ({ firstName, missionTitle, missionDate }) =>
-    `Bonjour ${firstName},\n\nRappel : vous avez la mission "${missionTitle}" prévue le ${missionDate}.`,
-  MISSION_REMINDER_J_DAY: ({ firstName, missionTitle, startTime }) =>
-    `Bonjour ${firstName},\n\nRappel : votre mission "${missionTitle}" commence aujourd'hui à ${startTime}.`,
-  COMPLIANCE_URSSAF: ({ firstName }) =>
-    `Bonjour ${firstName},\n\nVotre attestation URSSAF n'est plus conforme. Merci de la renouveler.`,
-  DOCUMENT_VALIDATED: ({ firstName, documentType }) =>
-    `Bonjour ${firstName},\n\nVotre document "${documentType}" a été validé.`,
-  DOCUMENT_REJECTED: ({ firstName, documentType, reason }) =>
-    `Bonjour ${firstName},\n\nVotre document "${documentType}" a été rejeté. Motif : ${reason}`,
-};
+let cached: Promise<Transporter<SentMessageInfo>> | null = null;
 
-export async function sendMail({ to, subject }: SendMailOptions): Promise<SendResult> {
-  // TODO: brancher le fournisseur SMTP/API (STORY 7.1)
-  console.info(`[MAIL] to=${to} subject=${subject}`);
-  return { success: true, messageId: `mock-${Date.now()}` };
+function buildTransport(): Transporter<SentMessageInfo> | Promise<Transporter<SentMessageInfo>> {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !user || !pass) {
+    // Fallback Ethereal (pas de clé .env requise)
+    return nodemailer.createTestAccount().then((account) =>
+      nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: { user: account.user, pass: account.pass },
+      }),
+    );
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: { user, pass },
+  });
 }
+
+async function getTransport(): Promise<Transporter<SentMessageInfo>> {
+  if (!cached) {
+    const t = buildTransport();
+    cached = Promise.resolve(t);
+  }
+  return cached;
+}
+
+export async function sendMail({ to, subject, html, text }: SendMailInput): Promise<SendResult> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= 2; attempt++) {
+    try {
+      const client = await getTransport();
+      const info = await client.sendMail({
+        from: process.env.FROM_EMAIL ?? process.env.SMTP_USER ?? 'noreply@vectura.fr',
+        to,
+        subject,
+        html,
+        text: text ?? html,
+      });
+      return { success: true, messageId: info.messageId };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+  }
+
+  return { success: false, error: lastError?.message ?? 'Erreur SMTP inconnue' };
+}
+
+const TEMPLATES: Record<string, (vars: Record<string, string>) => { subject: string; text: string }> = {
+  DOCUMENT_EXPIRY: ({ firstName, documentType }) => ({
+    subject: 'Votre document va bientôt expirer',
+    text: `Bonjour ${firstName},\n\nVotre document "${documentType}" va bientôt expirer. Veuillez le renouveler dans votre espace chauffeur.`,
+  }),
+  MISSION_REMINDER_J_MINUS_1: ({ firstName, missionTitle, missionDate }) => ({
+    subject: 'Rappel : mission prévue demain',
+    text: `Bonjour ${firstName},\n\nRappel : vous avez la mission "${missionTitle}" prévue le ${missionDate}.`,
+  }),
+  MISSION_REMINDER_J_DAY: ({ firstName, missionTitle, startTime }) => ({
+    subject: "Rappel : mission aujourd'hui",
+    text: `Bonjour ${firstName},\n\nRappel : votre mission "${missionTitle}" commence aujourd'hui à ${startTime}.`,
+  }),
+  COMPLIANCE_URSSAF: ({ firstName }) => ({
+    subject: 'Votre attestation URSSAF n\'est plus conforme',
+    text: `Bonjour ${firstName},\n\nVotre attestation URSSAF n'est plus conforme. Merci de la renouveler.`,
+  }),
+  DOCUMENT_VALIDATED: ({ firstName, documentType }) => ({
+    subject: 'Document validé',
+    text: `Bonjour ${firstName},\n\nVotre document "${documentType}" a été validé.`,
+  }),
+  DOCUMENT_REJECTED: ({ firstName, documentType, reason }) => ({
+    subject: 'Document rejeté',
+    text: `Bonjour ${firstName},\n\nVotre document "${documentType}" a été rejeté. Motif : ${reason}`,
+  }),
+  SANCTION_APPLIED: ({ firstName, sanctionType, reason }) => ({
+    subject: sanctionType === 'RADIATION' ? 'Compte radié' : 'Compte suspendu',
+    text: `Bonjour ${firstName},\n\nVotre compte a fait l'objet d'une sanction : ${sanctionType}. Motif : ${reason}.`,
+  }),
+};
 
 export async function sendTemplateMail(to: string, type: string, variables: Record<string, string>) {
   const template = TEMPLATES[type];
   if (!template) {
     throw new Error(`Template inconnu : ${type}`);
   }
-  const text = template(variables);
-  return sendMail({ to, subject: type, text });
+  const { subject, text } = template(variables);
+  return sendMail({ to, subject, text });
 }

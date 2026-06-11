@@ -1,9 +1,9 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { requireAdmin } from '../middleware/requireAdmin';
 
-const prisma = new PrismaClient();
+
 
 const driverQuerySchema = z.object({
   status: z.enum(['EN_ATTENTE', 'VALIDE', 'SUSPENDU', 'RADIE']).optional(),

@@ -2,21 +2,25 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Prisma (engines) a besoin d'OpenSSL/compatibilité libc.
-# Sur Alpine, on installe openssl et les libs nécessaires.
 RUN apk add --no-cache \
   openssl \
   libcrypto3 \
   libssl3 \
-  libc6-compat
+  libc6-compat \
+  python3 \
+  make \
+  g++
 
-# Install deps first (better layer caching)
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 CMD wget -qO- http://localhost:3000/api/health || exit 1
+
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
 

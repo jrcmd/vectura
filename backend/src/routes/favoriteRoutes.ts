@@ -1,9 +1,10 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
+
 import { requireCompany } from '../middleware/requireCompany';
 
-const prisma = new PrismaClient();
+
 
 const addFavoriteSchema = z.object({ driverId: z.string().min(1) });
 const updatePrioritySchema = z.object({ driverId: z.string().min(1), priorityHours: z.coerce.number().int().nonnegative() });

@@ -1,9 +1,10 @@
 import type { Application, Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import prisma from '../lib/prisma';
 import { z } from 'zod';
-import { PrismaClient, Role, UserStatus, DocType, DocStatus } from '@prisma/client';
+import { Role, UserStatus, DocType, DocStatus } from '@prisma/client';
+import { hashPassword } from '../lib/password';
 
-const prisma = new PrismaClient();
+
 
 const registerDriverSchema = z.object({
   email: z.string().email(),
@@ -30,7 +31,7 @@ export function registerInscriptionChauffeurRoutes(app: Application) {
     try {
       const body = registerDriverSchema.parse(req.body);
 
-      const passwordHash = await bcrypt.hash(body.password, 12);
+      const passwordHash = hashPassword(body.password);
 
       // 1) Création utilisateur
       const user = await prisma.user.create({

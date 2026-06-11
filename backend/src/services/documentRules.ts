@@ -1,6 +1,7 @@
-import { PrismaClient, DocStatus } from '@prisma/client';
+import { DocStatus } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
+
 
 export async function getExpiringDocuments(days = 30) {
   const now = new Date();

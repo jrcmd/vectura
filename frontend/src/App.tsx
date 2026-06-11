@@ -19,6 +19,7 @@ import MissionsActives from './pages/MissionsActives';
 import MissionsPassees from './pages/MissionsPassees';
 import FacturationChauffeur from './pages/FacturationChauffeur';
 import FacturationEntreprise from './pages/FacturationEntreprise';
+import FavorisEntreprise from './pages/FavorisEntreprise';
 import QualificationChauffeur from './pages/QualificationChauffeur';
 import MissionCreate from './pages/MissionCreate';
 import DashboardAdmin from './pages/DashboardAdmin';
@@ -26,6 +27,15 @@ import GestionChauffeurs from './pages/GestionChauffeurs';
 import ValidationDocuments from './pages/ValidationDocuments';
 import SuiviMissions from './pages/SuiviMissions';
 import ConformiteVigilance from './pages/ConformiteVigilance';
+import Sanctions from './pages/Sanctions';
+import GestionSMS from './pages/GestionSMS';
+import CustomizeInvitationLink from './pages/CustomizeInvitationLink';
+import InscriptionChauffeurEnrollment from './pages/InscriptionChauffeurEnrollment';
+import QaFunctional from './pages/QaFunctional';
+import QaSecurity from './pages/QaSecurity';
+import Preproduction from './pages/Preproduction';
+import Production from './pages/Production';
+import Stabilization from './pages/Stabilization';
 import { useAuth } from './hooks/useAuth';
 
 function RequireDriver({ children }: { children: React.ReactNode }) {
@@ -111,14 +121,38 @@ export default function App(): JSX.Element {
           </RequireCompany>
         }
       />
-      <Route path="/profil-entreprise" element={<ProfilEntreprise />} />
+      <Route
+        path="/profil-entreprise"
+        element={
+          <RequireCompany>
+            <ProfilEntreprise />
+          </RequireCompany>
+        }
+      />
       <Route path="/companies/mission/create" element={<MissionCreate />} />
       <Route path="/companies/billing" element={<FacturationEntreprise />} />
+      <Route
+        path="/companies/favorites"
+        element={
+          <RequireCompany>
+            <FavorisEntreprise />
+          </RequireCompany>
+        }
+      />
       <Route path="/admin/dashboard" element={<DashboardAdmin />} />
       <Route path="/admin/chauffeurs" element={<GestionChauffeurs />} />
       <Route path="/admin/chauffeurs/:driverId/documents" element={<ValidationDocuments />} />
       <Route path="/admin/missions" element={<SuiviMissions />} />
       <Route path="/admin/compliance" element={<ConformiteVigilance />} />
+      <Route path="/admin/sanctions" element={<Sanctions />} />
+      <Route path="/admin/sms" element={<GestionSMS />} />
+      <Route path="/admin/invitations" element={<CustomizeInvitationLink />} />
+      <Route path="/enroll/:invitationId" element={<InscriptionChauffeurEnrollment />} />
+      <Route path="/qa/functional" element={<QaFunctional />} />
+      <Route path="/qa/security" element={<QaSecurity />} />
+      <Route path="/qa/preproduction" element={<Preproduction />} />
+      <Route path="/qa/production" element={<Production />} />
+      <Route path="/qa/stabilization" element={<Stabilization />} />
 
       {/* Pages inscription */}
       <Route path="/inscription/chauffeur" element={<InscriptionChauffeur />} />

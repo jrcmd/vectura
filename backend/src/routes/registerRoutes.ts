@@ -17,6 +17,11 @@ import { registerAdminDriverRoutes } from './adminDriverRoutes';
 import { registerAdminDocumentRoutes } from './adminDocumentRoutes';
 import { registerAdminMissionRoutes } from './adminMissionRoutes';
 import { registerAdminBillingRoutes } from './adminBillingRoutes';
+import { registerSmsRoutes } from './smsRoutes';
+import { registerEnrollmentRoutes } from './enrollmentRoutes';
+import { registerQaRoutes } from './qaRoutes';
+import { registerAuditRoutes } from './auditRoutes';
+import { registerMonitoringRoutes } from './monitoringRoutes';
 
 export function registerRoutes(app: Application) {
   registerHealthRoutes(app);
@@ -37,5 +42,10 @@ export function registerRoutes(app: Application) {
   registerAdminDocumentRoutes(app);
   registerAdminMissionRoutes(app);
   registerAdminBillingRoutes(app);
+  registerSmsRoutes(app);
+  registerEnrollmentRoutes(app);
+  registerQaRoutes(app);
+  registerAuditRoutes(app);
+  registerMonitoringRoutes(app);
 }
 

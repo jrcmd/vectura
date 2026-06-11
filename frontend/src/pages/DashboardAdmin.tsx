@@ -45,7 +45,8 @@ export default function DashboardAdmin() {
   const [kpi, setKpi] = useState<KpiData | null>(null);
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [margins, setMargins] = useState<MarginRow[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingKpi, setLoadingKpi] = useState(false);
+  const [loadingBilling, setLoadingBilling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -58,6 +59,7 @@ export default function DashboardAdmin() {
   }
 
   async function loadKpi() {
+    setLoadingKpi(true);
     try {
       const res = await fetch(`${apiBase}/admin/kpis`, { headers: headers() });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; kpis?: KpiData; message?: string } | null;
@@ -66,11 +68,13 @@ export default function DashboardAdmin() {
     } catch (err) {
       if (!(err instanceof Error)) throw err;
       setError(err.message);
+    } finally {
+      setLoadingKpi(false);
     }
   }
 
   async function loadBillingData() {
-    setLoading(true);
+    setLoadingBilling(true);
     setError(null);
     try {
       const params = new URLSearchParams();
@@ -84,11 +88,12 @@ export default function DashboardAdmin() {
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     } finally {
-      setLoading(false);
+      setLoadingBilling(false);
     }
   }
 
   async function loadMargins() {
+    setLoadingBilling(true);
     try {
       const params = new URLSearchParams();
       if (from) params.set('from', from);
@@ -125,7 +130,16 @@ export default function DashboardAdmin() {
       <main className="max-w-5xl mx-auto p-4 space-y-6">
         <h1 className="text-2xl font-extrabold">Tableau de bord</h1>
         {error ? <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</div> : null}
-        {kpi ? (
+        {loadingKpi ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {['Missions en cours', 'Chauffeurs en attente', 'Documents à renouveler', 'CA semaine (€)'].map((label) => (
+              <div key={label} className="rounded-2xl border bg-white p-4 shadow-sm">
+                <h2 className="text-sm font-medium text-slate-500">{label}</h2>
+                <p className="mt-2 text-3xl font-bold text-slate-900 animate-pulse">—</p>
+              </div>
+            ))}
+          </div>
+        ) : kpi ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="rounded-2xl border bg-white p-4 shadow-sm">
               <h2 className="text-sm font-medium text-slate-500">Missions en cours</h2>
@@ -158,7 +172,7 @@ export default function DashboardAdmin() {
             </div>
           </div>
 
-          {loading ? (
+          {loadingBilling ? (
             <p className="text-sm text-slate-500">Chargement…</p>
           ) : invoices.length === 0 ? (
             <p className="text-sm text-slate-600">Aucune facture pour cette période.</p>

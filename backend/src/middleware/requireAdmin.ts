@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { Role, UserStatus } from '@prisma/client';
+import { Role } from '@prisma/client';
+import prisma from '../lib/prisma';
 
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return res.status(401).json({ ok: false, message: 'Token manquant' });
@@ -10,20 +11,29 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
   const token = header.slice(7);
 
+  let payload: { sub: string; role: Role };
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
+    payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
       sub: string;
       role: Role;
-      status: UserStatus;
     };
-
-    if (payload.role !== Role.ADMIN) {
-      return res.status(403).json({ ok: false, message: 'Accès réservé aux administrateurs' });
-    }
-
-    (req as unknown as { adminId: string }).adminId = payload.sub;
-    next();
   } catch {
     return res.status(401).json({ ok: false, message: 'Token invalide' });
   }
+
+  if (payload.role !== Role.ADMIN) {
+    return res.status(403).json({ ok: false, message: 'Accès réservé aux administrateurs' });
+  }
+
+  // verify the user still exists (also blocks timing attack)
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    select: { id: true, status: true },
+  });
+  if (!user || user.status === 'SUSPENDU' || user.status === 'RADIE') {
+    return res.status(403).json({ ok: false, message: 'Session invalide' });
+  }
+
+  (req as unknown as { adminId: string }).adminId = user.id;
+  next();
 }

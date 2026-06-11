@@ -7,7 +7,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./uploads:/app/uploads
+      - uploads:/app/uploads
+      - backups:/app/backups
     ports:
       - "5432:5432"
 
@@ -32,12 +33,20 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
       - FROM_EMAIL=${FROM_EMAIL}
+      - DOMAIN=${DOMAIN:-localhost}
+      - SSL_MODE=${SSL_MODE:-external}
+      - API_BASE_URL=${API_BASE_URL:-http://localhost:3000/api}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-http://localhost:5173}
       - MATCHING_MAX_RADIUS_KM=${MATCHING_MAX_RADIUS_KM:-50}
       - MIN_RATE_PL=${MIN_RATE_PL:-25}
       - MIN_RATE_SPL=${MIN_RATE_SPL:-30}
       - PLATFORM_MARGIN_PERCENT=${PLATFORM_MARGIN_PERCENT:-15}
       - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-10}
       - UPLOAD_DIR=/app/uploads
+      - INVOICE_DIR=/app/uploads/invoices
+      - BACKUP_DIR=/app/backups
+      - BACKUP_ENABLED=${BACKUP_ENABLED:-true}
+      - BACKUP_USE_METADATA_ONLY=${BACKUP_USE_METADATA_ONLY:-false}
       - NODE_ENV=${NODE_ENV:-development}
     depends_on:
       - postgres
@@ -47,7 +56,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "5173:5173"
+      - "5173:4173"
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://localhost:3000/api}
     depends_on:
@@ -55,4 +64,6 @@ services:
 
 volumes:
   postgres_data:
+  uploads:
+  backups:
 

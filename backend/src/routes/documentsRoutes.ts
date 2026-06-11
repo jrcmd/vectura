@@ -1,11 +1,12 @@
 import type { Application, Request, Response } from 'express';
 import multer from 'multer';
+import prisma from '../lib/prisma';
 import path from 'path';
 import { z } from 'zod';
-import { PrismaClient, DocType } from '@prisma/client';
+import { DocType } from '@prisma/client';
 import { requireDriver } from '../routes/authRoutes';
 
-const prisma = new PrismaClient();
+
 
 const ALLOWED_TYPES = new Set<DocType>([
   DocType.PERMIS_C,
@@ -124,7 +125,7 @@ export function registerDocumentsRoutes(app: Application) {
         if (err instanceof z.ZodError) {
           return res.status(400).json({ ok: false, message: 'Données invalides', errors: err.flatten() });
         }
-        if (err instanceof Error && err.message === 'LIMIT_FILE_SIZE') {
+        if (err instanceof Error && (err.message === 'LIMIT_FILE_SIZE' || err.message.includes('too large'))) {
           return res.status(400).json({ ok: false, message: 'Fichier trop volumineux.' });
         }
         // eslint-disable-next-line no-console

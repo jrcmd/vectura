@@ -56,7 +56,7 @@ export default function InscriptionEntreprise(): JSX.Element {
       }
 
       setSuccess('Compte entreprise créé avec succès. Vous pouvez vous connecter.');
-      setTimeout(() => navigate('/inscription-entreprise'), 1500);
+      setTimeout(() => navigate('/connexion-entreprise'), 1500);
     } catch {
       setError('Erreur réseau. Vérifiez que le backend tourne.');
     } finally {

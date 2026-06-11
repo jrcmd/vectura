@@ -1,7 +1,8 @@
-import { PrismaClient, DocStatus } from '@prisma/client';
+import { DocStatus } from '@prisma/client';
 import { sendTemplateMail } from './mailService';
+import prisma from '../lib/prisma';
 
-const prisma = new PrismaClient();
+
 
 export async function getExpiringSoonDocuments(days = 7) {
   const now = new Date();
