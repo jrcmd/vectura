@@ -1,0 +1,17 @@
+{
+  "schema_version": "v3-smart-merge",
+  "merge_strategy": "best_of_both_worlds",
+  "sources": {
+    "v2": {
+      "kept_fields": ["comments", "emailNotifications", "dataSharing", "schoolOther"],
+      "kept_groups": ["Groupe 1", "Groupe 2", "Groupe 3", "Groupe 4", "Groupe 5"],
+      "notes": "v2 had simpler flat structure and useful consent fields"
+    },
+    "latest": {
+      "kept_fields": ["gender", "hearAbout", "status", "name", "email", "parentEmail", "phone", "address", "city", "zip", "birthday", "school", "schoolLevel", "schoolLevelOther", "schoolCity", "schoolZip"],
+      "kept_groups": ["Niveau 1", "Niveau 2", "Niveau 3", "Niveau 4", "Niveau 5"],
+      "notes": "latest has more complete participant info and required fields"
+    }
+  },
+  "rationale": "Combine latest's comprehensive participant data model with v2's consent tracking and flexible group naming. Use latest's required field structure for data completeness, while preserving v2's simple flat-file approach and useful meta fields."
+}

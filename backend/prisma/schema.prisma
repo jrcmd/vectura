@@ -96,6 +96,7 @@ model User {
   documents     Document[]
   missions      Mission[]
   createdMissions Mission[] @relation("CreatedBy")
+  invoicesAsCompany Invoice[] @relation("CompanyInvoices")
 
   favoritesAsCompany Favorite[] @relation("FavoriteCompany")
   favoritesAsDriver  Favorite[] @relation("FavoriteDriver")
@@ -105,6 +106,7 @@ model User {
 
 
   refreshTokens RefreshToken[]
+  resetTokens ResetToken[]
 }
 
 model DriverProfile {
@@ -138,9 +140,11 @@ model Document {
   expiryDate    DateTime?
   status        DocStatus @default(EN_ATTENTE)
   uploadedAt    DateTime @default(now())
-  validatedAt   DateTime?
-  validatedBy   String?
+  validatedAt    DateTime?
+  validatedBy    String?
   rejectionReason String?
+
+  @@unique([userId, type])
 }
 
 model Mission {
@@ -163,6 +167,7 @@ model Mission {
   driverId        String?
   driver          User?    @relation(fields: [driverId], references: [id])
   assignedAt      DateTime?
+  acceptedAt      DateTime?
 
   favoritePriorityHours Int @default(0)
   favoritePriorityStart DateTime?
@@ -192,6 +197,8 @@ model Favorite {
 
   driverId String
   driver   User   @relation("FavoriteDriver", fields: [driverId], references: [id])
+
+  priorityHours Int @default(0)
 
   createdAt DateTime @default(now())
 
@@ -229,6 +236,8 @@ model Billing {
   amountBilled    Float
   amountDriver    Float
   margin          Float
+  invoiceId       String?
+  invoice         Invoice? @relation(fields: [invoiceId], references: [id])
 
   invoiceNumber   String?  @unique
   invoiceUrl      String?
@@ -236,6 +245,28 @@ model Billing {
   weekStart       DateTime
   weekEnd         DateTime
   status          BillingStatus @default(PENDING)
+}
+
+model Invoice {
+  id                  String   @id @default(uuid())
+  companyId           String
+  company             User     @relation("CompanyInvoices", fields: [companyId], references: [id])
+
+  invoiceNumber       String   @unique
+  invoiceUrl          String?
+  generatedAt         DateTime?
+  weekStart           DateTime
+  weekEnd             DateTime
+  totalAmountBilled   Float
+  totalAmountDriver   Float
+  totalMargin         Float
+  status              BillingStatus @default(PENDING)
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  billings            Billing[]
+
+  @@unique([companyId, weekStart])
 }
 
 model NotificationLog {
@@ -255,6 +286,16 @@ model RefreshToken {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model ResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  usedAt    DateTime?
   createdAt DateTime @default(now())
 }
 

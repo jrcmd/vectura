@@ -1,0 +1,34 @@
+name: Deploy Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and push images
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker compose -f docker-compose.yml build
+          docker tag vectura-backend:latest ghcr.io/${{ github.repository_owner }}/vectura-backend:${{ github.ref_name }}
+          docker tag vectura-frontend:latest ghcr.io/${{ github.repository_owner }}/vectura-frontend:${{ github.ref_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/vectura-backend:${{ github.ref_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/vectura-frontend:${{ github.ref_name }}
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /srv/JR/projet/vectura || exit 1
+            git fetch --tags
+            git checkout ${{ github.ref_name }}
+            docker compose -f docker-compose.yml up -d
+            ./scripts/healthcheck.sh
