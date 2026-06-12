@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import prisma from '../lib/prisma';
+import { verifyAccess } from '../lib/jwt';
 
 export async function requireCompany(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
@@ -13,10 +13,7 @@ export async function requireCompany(req: Request, res: Response, next: NextFunc
 
   let payload: { sub: string; role: Role };
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
-      sub: string;
-      role: Role;
-    };
+    payload = verifyAccess(token) as { sub: string; role: Role };
   } catch {
     return res.status(401).json({ ok: false, message: 'Token invalide' });
   }

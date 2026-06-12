@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { createServer } from './server';
+import { validateEnv } from './config/env';
 import { startDocumentExpirationCron } from './services/documentExpirationCron';
 import { startDocumentAlertScheduler } from './services/documentAlertScheduler';
 import { startMissionReminderScheduler } from './services/missionReminderScheduler';
@@ -9,6 +10,9 @@ import { startWeeklyBillingCron } from './services/billingService';
 import { upsertCronJob } from './services/monitoringService';
 
 dotenv.config();
+
+// Valide les variables d'environnement critiques avant tout démarrage
+validateEnv();
 
 const app = createServer();
 startDocumentExpirationCron();

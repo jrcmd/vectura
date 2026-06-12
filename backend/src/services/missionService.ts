@@ -4,6 +4,7 @@ import prisma from '../lib/prisma';
 
 
 
+/** Récupère une mission avec les relations créateur et chauffeur */
 export async function getMissionWithRelations(missionId: string) {
   return prisma.mission.findUnique({
     where: { id: missionId },
@@ -14,6 +15,7 @@ export async function getMissionWithRelations(missionId: string) {
   });
 }
 
+/** Affecte un chauffeur à une mission ouverte et crée l'historique de statut */
 export async function assignDriverToMission(missionId: string, driverId: string) {
   const mission = await prisma.mission.findUnique({ where: { id: missionId } });
   if (!mission) throw new Error('MISSION_NOT_FOUND');
@@ -42,6 +44,7 @@ export async function assignDriverToMission(missionId: string, driverId: string)
   return updated;
 }
 
+/** Termine une mission en cours et déclenche la facturation */
 export async function completeMission(missionId: string, driverId: string) {
   const mission = await prisma.mission.findUnique({ where: { id: missionId } });
   if (!mission) throw new Error('MISSION_NOT_FOUND');
@@ -66,6 +69,7 @@ export async function completeMission(missionId: string, driverId: string) {
   return updated;
 }
 
+/** Annule une mission affectée par le chauffeur */
 export async function cancelMissionByDriver(missionId: string, driverId: string) {
   const mission = await prisma.mission.findUnique({ where: { id: missionId } });
   if (!mission) throw new Error('MISSION_NOT_FOUND');
@@ -97,6 +101,7 @@ export async function cancelMissionByDriver(missionId: string, driverId: string)
   return updated;
 }
 
+/** Annule une mission (ouverte ou affectée) par l'entreprise */
 export async function cancelMissionByCompany(missionId: string, companyId: string) {
   const mission = await prisma.mission.findUnique({ where: { id: missionId } });
   if (!mission) throw new Error('MISSION_NOT_FOUND');

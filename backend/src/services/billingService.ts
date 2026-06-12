@@ -4,8 +4,10 @@ import prisma from '../lib/prisma';
 import { generateInvoiceForCompanyWeek } from '../services/invoiceService';
 import { recordCronRun } from './monitoringService';
 
+/** Marge par défaut de la plateforme en pourcentage (15%) */
 const DEFAULT_PLATFORM_MARGIN_PERCENT = 15;
 
+/** Retourne la marge configurée ou la valeur par défaut (15%) */
 export function getPlatformMarginPercent(): number {
   const raw = process.env.PLATFORM_MARGIN_PERCENT;
   if (!raw) return DEFAULT_PLATFORM_MARGIN_PERCENT;
@@ -13,11 +15,13 @@ export function getPlatformMarginPercent(): number {
   return Number.isFinite(parsed) && parsed >= 0 && parsed <= 100 ? parsed : DEFAULT_PLATFORM_MARGIN_PERCENT;
 }
 
+/** Convertit un horaire "HH:MM" en nombre d'heures décimal */
 function parseTimeToHours(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
   return hours + minutes / 60;
 }
 
+/** Calcule le montant d'une mission selon le tarif horaire et la durée */
 export function calculateMissionAmount(hourlyRate: number, startTime: string, endTime?: string): number {
   const startHours = parseTimeToHours(startTime);
   if (!endTime) return hourlyRate;
@@ -28,11 +32,13 @@ export function calculateMissionAmount(hourlyRate: number, startTime: string, en
   return Math.round(amount * 100) / 100;
 }
 
+/** Calcule la marge (commission) sur le montant facturé */
 export function calculateMargin(amountBilled: number, percent: number): number {
   const margin = amountBilled * (percent / 100);
   return Math.round(margin * 100) / 100;
 }
 
+/** Calcule le montant reversé au chauffeur après déduction de la marge */
 export function calculateDriverAmount(amountBilled: number, margin: number): number {
   const driverAmount = amountBilled - margin;
   return Math.round(driverAmount * 100) / 100;
@@ -74,6 +80,7 @@ export async function createBillingForMission(missionId: string): Promise<{
   return { amountBilled, amountDriver, margin };
 }
 
+/** Retourne le lundi de la semaine calendaire (début de semaine) */
 function getWeekStart(date: Date): Date {
   const d = new Date(date);
   const day = d.getDay();
@@ -83,6 +90,7 @@ function getWeekStart(date: Date): Date {
   return monday;
 }
 
+/** Retourne le dimanche de la semaine calendaire (fin de semaine) */
 function getWeekEnd(date: Date): Date {
   const start = getWeekStart(date);
   const sunday = new Date(start);

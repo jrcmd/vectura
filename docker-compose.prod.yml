@@ -39,6 +39,8 @@ services:
       BACKUP_DIR: /app/backups
       BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
       BACKUP_USE_METADATA_ONLY: ${BACKUP_USE_METADATA_ONLY:-false}
+      BACKUP_ENCRYPTION_ENABLED: ${BACKUP_ENCRYPTION_ENABLED:-true}
+      BACKUP_ENCRYPTION_PASSPHRASE: ${BACKUP_ENCRYPTION_PASSPHRASE}
       NODE_ENV: production
     depends_on:
       - postgres-prod

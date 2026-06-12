@@ -1,31 +1,17 @@
 import type { Application, Request, Response } from 'express';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
+import { signAccess, signRefresh } from '../lib/jwt';
+import { createRateLimiter } from '../middleware/rateLimiter';
 import prisma from '../lib/prisma';
 import { Role, UserStatus } from '@prisma/client';
 import { hashPassword } from '../lib/password';
 import { acceptEnrollmentInvitationSchema } from '../schemas/sms';
 
-const JWT_SECRET = process.env.JWT_SECRET ?? 'change-me';
-
-function signAccess(sub: string, role: Role, status: UserStatus) {
-  return jwt.sign(
-    { sub, role, status },
-    JWT_SECRET,
-    { expiresIn: (process.env.JWT_ACCESS_EXPIRATION ?? '15m') as unknown as jwt.SignOptions['expiresIn'] },
-  );
-}
-
-function signRefresh(sub: string) {
-  return jwt.sign(
-    { sub, type: 'refresh' },
-    JWT_SECRET,
-    { expiresIn: (process.env.JWT_REFRESH_EXPIRATION ?? '7d') as unknown as jwt.SignOptions['expiresIn'] },
-  );
-}
+/** Utilise les helpers JWT centralisés */
 
 export function registerEnrollmentRoutes(app: Application) {
-  app.post('/api/enrollment/accept', async (req: Request, res: Response) => {
+  const authLimiter = createRateLimiter({ points: 5, duration: 15 * 60, keyPrefix: 'auth' });
+  app.post('/api/enrollment/accept', authLimiter, async (req: Request, res: Response) => {
     try {
       const { invitationId, password, firstName, lastName } = acceptEnrollmentInvitationSchema.parse(req.body);
 
@@ -79,8 +65,8 @@ export function registerEnrollmentRoutes(app: Application) {
         data: { status: 'ACCEPTED', acceptedAt: new Date() },
       });
 
-      const accessToken = signAccess(user.id, user.role, user.status);
-      const refreshToken = signRefresh(user.id);
+      const accessToken = signAccess({ sub: user.id, role: user.role, status: user.status });
+      const refreshToken = signRefresh({ sub: user.id, type: 'refresh' });
 
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + 7);

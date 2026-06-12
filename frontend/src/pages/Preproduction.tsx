@@ -25,7 +25,8 @@ export default function Preproduction(): JSX.Element {
   const { items, loading, error, loadRemote, updateItem } = useQaChecklist('preproduction');
   const [results, setResults] = useState<ActionResult[]>([]);
   const byTitle = useMemo(() => new Map(items.map((item) => [item.name, item])), [items]);
-  const apiBaseUrl = useMemo(() => {
+  /** Calcule l'URL de base de l'API pour les appels fetch */
+const apiBaseUrl = useMemo(() => {
     const base = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3000/api';
     return base.endsWith('/api') ? base : `${base}/api`;
   }, []);

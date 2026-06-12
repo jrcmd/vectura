@@ -53,6 +53,7 @@ export function getWeekEnd(weekStart: Date): Date {
   return end;
 }
 
+/** Arrondit un nombre au centime le plus proche (2 décimales) */
 function roundMoney(value: number): number {
   return Math.round(value * 100) / 100;
 }

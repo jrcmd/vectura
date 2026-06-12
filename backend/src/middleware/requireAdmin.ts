@@ -1,8 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import prisma from '../lib/prisma';
+import { verifyAccess } from '../lib/jwt';
 
+/** Middleware qui vérifie que l'utilisateur a le rôle ADMIN et que son compte est actif */
 export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
@@ -13,10 +14,8 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
 
   let payload: { sub: string; role: Role };
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
-      sub: string;
-      role: Role;
-    };
+    // Utilise la vérification centralisée (lève si invalide)
+    payload = verifyAccess(token) as { sub: string; role: Role };
   } catch {
     return res.status(401).json({ ok: false, message: 'Token invalide' });
   }

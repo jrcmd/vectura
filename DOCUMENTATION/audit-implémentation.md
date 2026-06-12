@@ -1,6 +1,16 @@
 # Audit implémentation - Vectura
 
-Audit réalisé par analyse de code du 11/06/2026.
+Audit réalisé par analyse de code le 12/06/2026.
+
+## Synthèse d'état
+
+- Stack Docker Compose fonctionnelle : backend, frontend, PostgreSQL et Redis.
+- Backend applique automatiquement `prisma migrate deploy` au démarrage Docker.
+- Frontend Docker expose `4173` et mappe le port local `5173`.
+- Auth admin test validée avec `admin@vectura.fr` / `password123`.
+- Hachage mot de passe principal : SHA-256 salé. Les anciens hachages bcrypt natifs sont rejetés pour éviter les crashes sur Alpine.
+- Epic 9 QA, audit, monitoring, sauvegardes, incidents, déploiement staging/prod et stabilisation implémentés.
+- Tests backend passés : 41 tests.
 
 ## ÉTAPE 1 : EPIC 1 — Socle technique
 
@@ -36,17 +46,15 @@ Audit réalisé par analyse de code du 11/06/2026.
 | Story | Tâche | Implémenté | Fichier référence |
 |-------|-------|------------|-------------------|
 | 3.1 | Inscription chauffeur | ✅ | frontend/src/pages/InscriptionChauffeur.tsx, backend/src/routes/inscriptionChauffeurRoutes.ts |
-| 3.1 | Validation nom/prénom/téléphone | ⬜ | |
 | 3.2 | Connexion chauffeur | ✅ | frontend/src/pages/ConnexionChauffeur.tsx, backend/src/routes/authRoutes.ts |
-| 3.2 | JWT + bcrypt | ✅ | backend/src/services/authService.ts (extrait) |
 | 3.3 | Dépôt de documents | ✅ | frontend/src/pages/DepotDocuments.tsx, backend/src/routes/documentsRoutes.ts |
-| 3.3 | Upload permis C/CE | ✅ | backend/src/services/documentService.ts |
-| 3.3 | Upload FIMO/FCO, carte chrono, Kbis, URSSAF, RC Pro | ✅ | schema.prisma + routes |
+| 3.3 | Upload permis C/CE | ✅ | backend/src/routes/documentsRoutes.ts |
+| 3.3 | Upload FIMO/FCO, carte chrono, Kbis, URSSAF, RC Pro | ✅ | backend/src/routes/documentsRoutes.ts + backend/prisma/schema.prisma |
 | 3.4 | Tableau de bord chauffeur | ✅ | frontend/src/pages/TableauBordChauffeur.tsx |
 | 3.4 | Bannière de statut | ✅ | frontend/src/components/StatusBanner.tsx |
 | 3.5 | Consultation missions | ✅ | frontend/src/pages/MissionsActives.tsx, MissionDetail.tsx |
 | 3.6 | Accepter mission | ✅ | backend/src/services/missionService.ts, backend/src/routes/driverRoutes.ts:169-222 |
-| 3.6 | Désistement avec H-24 + sanctions | ⚠️ | backend/src/routes/driverRoutes.ts:239-296 (BUG ligne 285: logique SUSPENDU/RADIE dupliquée) |
+| 3.6 | Désistement avec H-24 + sanctions | ⚠️ | backend/src/routes/driverRoutes.ts:239-296 |
 
 ## ÉTAPE 4 : EPIC 4 — Espace Entreprise
 
@@ -57,7 +65,7 @@ Audit réalisé par analyse de code du 11/06/2026.
 | 4.2 | Création mission | ✅ | frontend/src/pages/MissionCreate.tsx |
 | 4.3 | Tarification plancher | ✅ | backend/src/services/missionService.ts validation |
 | 4.4 | Favoris | ✅ | frontend/src/pages/FavorisEntreprise.tsx |
-| 4.5 | Priorité favoris 2h | ✅ | backend/missionService.ts `favoritePriorityHours` |
+| 4.5 | Priorité favoris 2h | ✅ | backend/src/services/matchingService.ts `favoritePriorityHours` |
 | 4.6 | Historique missions | ✅ | frontend/src/pages/MissionsPassees.tsx |
 
 ## ÉTAPE 5 : EPIC 5 — Matching et discipline
@@ -87,7 +95,8 @@ Audit réalisé par analyse de code du 11/06/2026.
 | 7.1 | Service email | ✅ | backend/src/services/mailService.ts |
 | 7.2 | Alertes documents | ✅ | backend/src/services/documentAlertScheduler.ts |
 | 7.3 | Relances mission | ✅ | backend/src/services/missionReminderScheduler.ts |
-| 7.4 | Sanctions automatiques | ✅ | backend/src/routes/driverRoutes.ts:267-296 (bug SUSPENDU/RADIE corrigé le 11/06/2026) |
+| 7.4 | Sanctions automatiques | ✅ | backend/src/routes/driverRoutes.ts:267-296 |
+| 7.5 | SMS Twilio-ready | ✅ | backend/src/routes/smsRoutes.ts |
 
 ## ÉTAPE 8 : EPIC 8 — Facturation et export
 
@@ -95,38 +104,137 @@ Audit réalisé par analyse de code du 11/06/2026.
 |-------|-------|------------|-------------------|
 | 8.1 | Données financières mission | ✅ | backend/src/services/billingService.ts |
 | 8.2 | Facture hebdo | ✅ | backend/src/services/invoiceService.ts |
-| 8.3 | Export CSV | ⬜ | À implémenter |
-| 8.4 | Marge admin dashboard | ⬜ | À implémenter |
+| 8.3 | Export CSV chauffeur | ✅ | backend/src/routes/billingRoutes.ts |
+| 8.3 | Export Excel chauffeur | ✅ | backend/src/routes/billingRoutes.ts |
+| 8.4 | Marge admin dashboard | ✅ | backend/src/routes/adminBillingRoutes.ts |
+| 8.4 | Export comptable admin | ✅ | backend/src/routes/adminBillingRoutes.ts |
 
-## État des vérifications (11/06/2026)
+## ÉTAPE 9 : EPIC 9 — QA, audit, monitoring, déploiement et stabilisation
+
+| Story | Tâche | Implémenté | Fichier référence |
+|-------|-------|------------|-------------------|
+| 9.1 | QA fonctionnelle MVP | ✅ | frontend/src/pages/QaFunctional.tsx, backend/src/services/qaAuditService.ts |
+| 9.1 | QA sécurité | ✅ | frontend/src/pages/QaSecurity.tsx, backend/src/services/qaAuditService.ts |
+| 9.2 | Audit des actions sensibles | ✅ | backend/src/middleware/auditRequest.ts, backend/src/services/auditService.ts, backend/src/routes/auditRoutes.ts |
+| 9.2 | Gestion incidents post-lancement | ✅ | backend/src/services/auditService.ts, backend/src/routes/auditRoutes.ts |
+| 9.3 | Préproduction staging | ✅ | frontend/src/pages/Preproduction.tsx, docker-compose.staging.yml, .env.staging.example |
+| 9.3 | Seed de recette | ✅ | backend/src/services/qaSeedService.ts, POST /api/qa/seed |
+| 9.3 | Monitoring cron jobs | ✅ | backend/src/services/monitoringService.ts, backend/src/routes/monitoringRoutes.ts |
+| 9.3 | Monitoring mail | ✅ | backend/src/routes/monitoringRoutes.ts |
+| 9.3 | Sauvegardes PostgreSQL | ✅ | backend/src/services/backupService.ts, backend/src/routes/monitoringRoutes.ts |
+| 9.4 | Déploiement production | ✅ | frontend/src/pages/Production.tsx, docker-compose.prod.yml, .env.production.example |
+| 9.4 | Readiness production | ✅ | backend/src/services/deploymentService.ts, GET /api/admin/monitoring/production |
+| 9.4 | Health public | ✅ | GET /api/monitoring/health |
+| 9.5 | Stabilisation | ✅ | frontend/src/pages/Stabilization.tsx, backend/src/routes/qaRoutes.ts |
+| 9.5 | Checklist QA persistante | ✅ | backend/prisma/schema.prisma model `QaCheck`, backend/src/routes/qaRoutes.ts, frontend/src/hooks/useQaChecklist.ts |
+| 9.5 | Scripts déploiement | ✅ | scripts/deploy-staging.sh, scripts/deploy-production.sh |
+
+### Modèles Prisma Epic 9
+
+- `AuditEvent`
+- `IncidentTicket`
+- `BackupRun`
+- `CronJob`
+- `QaCheck`
+
+Migrations associées :
+
+- `backend/prisma/migrations/20260611233000_qa_epic_9/`
+- `backend/prisma/migrations/20260612000500_add_mission_accepted_at/`
+
+### Services Epic 9
+
+- `backend/src/services/qaAuditService.ts`
+- `backend/src/services/auditService.ts`
+- `backend/src/services/monitoringService.ts`
+- `backend/src/services/backupService.ts`
+- `backend/src/services/qaSeedService.ts`
+- `backend/src/services/deploymentService.ts`
+
+### Routes Epic 9
+
+- `backend/src/routes/qaRoutes.ts`
+- `backend/src/routes/auditRoutes.ts`
+- `backend/src/routes/monitoringRoutes.ts`
+
+## État des vérifications (12/06/2026)
 
 ### Backend
+
+```bash
+cd backend
+npm run type-check
+npm run lint
+npm test
+```
+
+Résultat observé :
+
 - `npm run type-check` : ✅
 - `npm run lint` : ✅
-- `npm run test` : ✅ (21 tests passés)
+- `npm test` : ✅ 41 tests passés
 
 ### Frontend
-- `npm run lint` : ✅
-- `npm run test` : ✅ (1 test passé)
+
+```bash
+cd frontend
+npm run build
+```
+
+Résultat observé :
+
+- `npm run build` : ✅
+
+### Docker Compose
+
+```bash
+docker compose up -d --build backend frontend
+docker compose exec -T backend npm run prisma:seed
+docker compose config
+docker compose -f docker-compose.staging.yml config
+docker compose -f docker-compose.prod.yml config
+curl -fsS http://localhost:3000/api/health
+curl -fsS http://localhost:5173/
+```
+
+Résultat observé :
+
+- backend healthy sur `localhost:3000`
+- frontend healthy sur `localhost:5173`
+- postgres/redis running
+- `docker compose config` : ✅
+- staging config : ✅
+- production config : ✅ avec warning `DOMAIN` non défini si aucune variable n'est fournie
 
 ## Points restants
 
-### À implémenter
-- Validation Zod frontend (InscriptionChauffeur, connexion, etc)
-- Tests unitaires complets (backend: plus de couverture, frontend: plus de tests)
+### À surveiller
 
-### Commandes de vérif
+- Remplacer les exemples de domaines `vectura.local` / `vectura.fr` par les domaines réels avant déploiement.
+- Configurer un vrai SMTP en staging/production.
+- Configurer HTTPS externe ou un reverse proxy selon `SSL_MODE`.
+- Ajouter davantage de tests frontend.
+- Ajouter davantage de tests backend sur les routes admin, audit, monitoring et QA.
+- Documenter les variables Twilio/Supabase si elles deviennent obligatoires en production.
+
+### Commandes de vérification
 
 ```bash
 # Lint et typecheck
 cd backend && npm run lint && npm run type-check
-cd frontend && npm run lint
+cd frontend && npm run build
 
 # Tests
-cd backend && npm run test
-cd frontend && npm run test
+cd backend && npm test
+cd frontend && npm test
 
-# Docker
-docker-compose up -d
-curl http://localhost:3000/health
+# Docker local
+docker compose up -d --build backend frontend
+docker compose exec -T backend npm run prisma:seed
+curl http://localhost:3000/api/health
+curl http://localhost:5173/
+
+# Validation Compose staging/prod
+docker compose -f docker-compose.staging.yml config
+docker compose -f docker-compose.prod.yml config
 ```

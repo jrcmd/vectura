@@ -125,8 +125,13 @@ export function registerDriverRoutes(app: Application) {
       }
 
       if (listType === 'available') {
-        const missions = await findCompatibleMissions(driverId);
-        return res.status(200).json({ ok: true, missions });
+        const pagingSchema = z.object({
+          page: z.coerce.number().int().min(1).optional(),
+          limit: z.coerce.number().int().min(1).max(100).optional(),
+        });
+        const paging = pagingSchema.parse(req.query);
+        const missions = await findCompatibleMissions(driverId, { page: paging.page, limit: paging.limit });
+        return res.status(200).json({ ok: true, missions, page: paging.page ?? 1, limit: paging.limit ?? 20 });
       }
 
       return res.status(400).json({ ok: false, message: 'Type de liste invalide' });

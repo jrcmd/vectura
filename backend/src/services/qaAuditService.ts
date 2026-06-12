@@ -30,6 +30,11 @@ export function canAccessRole(actorRole: RoleName, requiredRole: RoleName): bool
   return ROLE_LEVEL[actorRole] >= ROLE_LEVEL[requiredRole];
 }
 
+/**
+ * Évaluation des décisions en cas d'annulation tardive.
+ * - 1ère/2ème annulation : suspension temporaire
+ * - 3ème annulation : radiation automatique
+ */
 export function evaluateLateCancellation(input: {
   isLate: boolean;
   lateCount: number;

@@ -5,6 +5,7 @@ import { requireAdmin } from '../middleware/requireAdmin';
 import { validateCredentialsSchema, sendSmsSchema } from '../schemas/sms';
 import { smsService } from '../services/sms/SmsService';
 
+/** Routes SMS : validation des credentials, envoi et consultation des logs (admin seulement) */
 export function registerSmsRoutes(app: Application) {
   app.post('/api/sms/validate', requireAdmin, async (req: Request, res: Response) => {
     try {

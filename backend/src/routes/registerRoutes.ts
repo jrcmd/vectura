@@ -23,6 +23,7 @@ import { registerQaRoutes } from './qaRoutes';
 import { registerAuditRoutes } from './auditRoutes';
 import { registerMonitoringRoutes } from './monitoringRoutes';
 
+/** Registre central de toutes les routes de l'API Express */
 export function registerRoutes(app: Application) {
   registerHealthRoutes(app);
   registerInscriptionChauffeurRoutes(app);

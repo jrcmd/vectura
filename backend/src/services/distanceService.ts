@@ -19,8 +19,20 @@ export function haversineDistanceKm(
   return EARTH_RADIUS_KM * c;
 }
 
+export function getBoundingBox(lat: number, lng: number, radiusKm: number) {
+  const latDelta = radiusKm / 111.0;
+  const lngDelta = radiusKm / Math.max(0.0001, 111.0 * Math.cos((lat * Math.PI) / 180));
+
+  return {
+    minLat: lat - latDelta,
+    maxLat: lat + latDelta,
+    minLng: lng - lngDelta,
+    maxLng: lng + lngDelta,
+  };
+}
+
 export function getMaxRadiusKm(): number {
-  const raw = process.env.MAX_MATCHING_RADIUS_KM;
+  const raw = process.env.MAX_MATCHING_RADIUS_KM ?? process.env.MATCHING_MAX_RADIUS_KM;
   if (!raw) return 50;
   const parsed = Number(raw);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 50;

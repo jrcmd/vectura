@@ -1,7 +1,7 @@
 import { MissionStatus, TruckType, UserStatus } from '@prisma/client';
 import { evaluateDriverQualification } from './qualificationService';
 import prisma from '../lib/prisma';
-import { getMaxRadiusKm, haversineDistanceKm } from './distanceService';
+import { getBoundingBox, getMaxRadiusKm, haversineDistanceKm } from './distanceService';
 
 
 
@@ -35,7 +35,13 @@ function hasRequiredLicense(driverProfile: { hasPermisC: boolean; hasPermisCE: b
   }
 }
 
-export async function findCompatibleMissions(driverId: string): Promise<MissionMatch[]> {
+export type FindCompatibleMissionsOptions = {
+  limit?: number;
+  offset?: number;
+  page?: number;
+};
+
+export async function findCompatibleMissions(driverId: string, options: FindCompatibleMissionsOptions = {}): Promise<MissionMatch[]> {
   const driver = await prisma.user.findUnique({
     where: { id: driverId },
     select: {
@@ -60,11 +66,53 @@ export async function findCompatibleMissions(driverId: string): Promise<MissionM
   }
 
   const now = new Date();
+  const maxRadius = getMaxRadiusKm();
+  const limit = options.limit ?? 20;
+  const page = options.page && options.page > 0 ? options.page : 1;
+  const offset = options.offset ?? (page - 1) * limit;
+
+  const locationFilter =
+    driver.latitude != null && driver.longitude != null
+      ? {
+          OR: [
+            {
+              AND: [
+                { latitude: { gte: 0 } },
+                { longitude: { gte: 0 } },
+              ],
+            },
+          ],
+        }
+      : undefined;
+
+  const whereBase: any = {
+    status: MissionStatus.OUVERTE,
+    missionDate: { gte: now },
+  };
+
+  if (driver.latitude != null && driver.longitude != null) {
+    const { minLat, maxLat, minLng, maxLng } = getBoundingBox(driver.latitude, driver.longitude, maxRadius);
+    whereBase.AND = [
+      {
+        OR: [
+          {
+            AND: [
+              { latitude: { gte: minLat, lte: maxLat } },
+              { longitude: { gte: minLng, lte: maxLng } },
+            ],
+          },
+          { latitude: null },
+          { longitude: null },
+        ],
+      },
+    ];
+  }
+
   const openMissions = await prisma.mission.findMany({
-    where: {
-      status: MissionStatus.OUVERTE,
-      missionDate: { gte: now },
-    },
+    where: whereBase,
+    orderBy: { missionDate: 'asc' },
+    take: limit,
+    skip: offset,
     select: {
       id: true,
       title: true,
@@ -84,7 +132,15 @@ export async function findCompatibleMissions(driverId: string): Promise<MissionM
     },
   });
 
-  const maxRadius = getMaxRadiusKm();
+  const creatorIds = Array.from(new Set(openMissions.map((mission) => mission.creatorId)));
+  const favoriteRecords = await prisma.favorite.findMany({
+    where: {
+      driverId,
+      companyId: { in: creatorIds },
+    },
+    select: { companyId: true },
+  });
+  const favoriteCompanyIds = new Set(favoriteRecords.map((f) => f.companyId));
 
   const matches: MissionMatch[] = [];
 
@@ -102,13 +158,8 @@ export async function findCompatibleMissions(driverId: string): Promise<MissionM
 
     if (mission.favoritePriorityHours > 0 && mission.favoritePriorityStart) {
       const priorityEnd = new Date(mission.favoritePriorityStart.getTime() + mission.favoritePriorityHours * 60 * 60 * 1000);
-      if (now < priorityEnd) {
-        const isFavorite = await prisma.favorite.findFirst({
-          where: { companyId: mission.creatorId, driverId },
-        });
-        if (!isFavorite) {
-          continue;
-        }
+      if (now < priorityEnd && !favoriteCompanyIds.has(mission.creatorId)) {
+        continue;
       }
     }
 
@@ -127,6 +178,15 @@ export async function findCompatibleMissions(driverId: string): Promise<MissionM
       favoritePriorityStart: mission.favoritePriorityStart,
     });
   }
+
+  // eslint-disable-next-line no-console
+  console.debug('[matchingService] findCompatibleMissions', {
+    driverId,
+    resultCount: matches.length,
+    queriedMissions: openMissions.length,
+    limit,
+    offset,
+  });
 
   return matches;
 }

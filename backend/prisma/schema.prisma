@@ -145,10 +145,11 @@ model Document {
   status        DocStatus @default(EN_ATTENTE)
   uploadedAt    DateTime @default(now())
   validatedAt    DateTime?
-  validatedBy    String?
+  validatedBy   String?
   rejectionReason String?
 
   @@unique([userId, type])
+  @@index([expiryDate]) // Permet de rechercher rapidement les documents expirés
 }
 
 model Mission {
@@ -181,6 +182,9 @@ model Mission {
   statusHistory   MissionStatusHistory[]
 
   billing         Billing?
+
+  @@index([status, missionDate]) // Optimise les recherches de missions ouvertes et datées
+  @@index([driverId, status])  // Optimise les requêtes par chauffeur et état de mission
 }
 
 model MissionStatusHistory {
@@ -207,6 +211,7 @@ model Favorite {
   createdAt DateTime @default(now())
 
   @@unique([companyId, driverId])
+  @@index([companyId, driverId]) // Accélère les recherches de favoris pour un couple entreprise/chauffeur
 }
 
 
@@ -300,6 +305,7 @@ model AuditEvent {
 
   @@index([action, createdAt])
   @@index([actorId, createdAt])
+  @@index([createdAt]) // Permet de parcourir rapidement les événements par ordre chronologique
 }
 
 model IncidentTicket {

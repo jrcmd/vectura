@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
+/** Middleware Express global pour capturer et logger les erreurs non gérées */
 export function errorHandler(error: Error, _req: Request, res: Response, next: NextFunction) {
   if (res.headersSent) {
     return next(error);

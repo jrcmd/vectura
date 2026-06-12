@@ -13,6 +13,7 @@ import type { NextFunction, Request, Response } from 'express';
 
 dotenv.config();
 
+/** Factory pour créer et configurer l'application Express avec sécurité, logging et middlewares */
 export function createServer() {
   const app = express();
 
@@ -45,6 +46,32 @@ export function createServer() {
 
   app.use(['/api/health', '/health'], (_req, res) => {
     res.json({ ok: true });
+  });
+
+  app.get('/api', (_req, res) => {
+    res.json({
+      ok: true,
+      endpoints: [
+        '/api/health',
+        '/api/auth/login',
+        '/api/auth/refresh',
+        '/api/auth/logout',
+        '/api/auth/forgot-password',
+        '/api/auth/reset-password',
+        '/api/drivers/register',
+        '/api/driver/me',
+        '/api/driver/qualification',
+        '/api/driver/missions',
+        '/api/companies/register',
+        '/api/companies/login',
+        '/api/companies/missions',
+        '/api/companies/favorites',
+        '/api/admin/kpis',
+        '/api/admin/drivers',
+        '/api/admin/missions',
+        '/api/monitoring/health',
+      ],
+    });
   });
 
   app.use(auditRequest);

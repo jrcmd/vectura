@@ -1,11 +1,10 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import jwt from 'jsonwebtoken';
+import { signAccess, signRefresh, verifyRefresh, verifyAccess } from '../lib/jwt';
 import { z } from 'zod';
 import { Role } from '@prisma/client';
 import { verifyPassword } from '../lib/password';
-
-
+import { createRateLimiter } from '../middleware/rateLimiter';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,7 +12,8 @@ const loginSchema = z.object({
 });
 
 export function registerAuthRoutes(app: Application) {
-  app.post('/api/auth/login', async (req: Request, res: Response) => {
+  const authLimiter = createRateLimiter({ points: 5, duration: 15 * 60, keyPrefix: 'auth' });
+  app.post('/api/auth/login', authLimiter, async (req: Request, res: Response) => {
     try {
       const { email, password } = loginSchema.parse(req.body);
 
@@ -39,27 +39,13 @@ export function registerAuthRoutes(app: Application) {
         return res.status(401).json({ ok: false, message: 'Identifiants invalides' });
       }
 
-      const accessToken = jwt.sign(
-        { sub: user.id, role: user.role, status: user.status },
-        process.env.JWT_SECRET ?? 'change-me',
-        { expiresIn: (process.env.JWT_ACCESS_EXPIRATION ?? '15m') as unknown as jwt.SignOptions['expiresIn'] },
-      );
+      const accessToken = signAccess({ sub: user.id, role: user.role, status: user.status });
+      const refreshToken = signRefresh({ sub: user.id, type: 'refresh' });
 
-      const expiresIn = (process.env.JWT_REFRESH_EXPIRATION ?? '7d') as unknown as jwt.SignOptions['expiresIn'];
-
-      const refreshToken = jwt.sign(
-        { sub: user.id, type: 'refresh' },
-        process.env.JWT_SECRET ?? 'change-me',
-        { expiresIn },
-      );
-
-      // Persist refresh token for revocation support
       const refreshExpiresAt = new Date();
       const refreshDays = parseInt(process.env.REFRESH_TOKEN_DAYS ?? '7', 10);
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + refreshDays);
-      await prisma.refreshToken.create({
-        data: { token: refreshToken, userId: user.id, expiresAt: refreshExpiresAt },
-      });
+      await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt: refreshExpiresAt } });
 
       return res.status(200).json({
         ok: true,
@@ -84,8 +70,7 @@ export function registerAuthRoutes(app: Application) {
     }
   });
 
-  // ── Refresh token endpoint ──────────────────────────────────────────────────
-  app.post('/api/auth/refresh', async (req: Request, res: Response) => {
+  app.post('/api/auth/refresh', authLimiter, async (req: Request, res: Response) => {
     try {
       const { refreshToken } = req.body as { refreshToken?: string };
       if (!refreshToken) {
@@ -94,10 +79,7 @@ export function registerAuthRoutes(app: Application) {
 
       let payload: { sub: string; type: string };
       try {
-        payload = jwt.verify(
-          refreshToken,
-          process.env.JWT_SECRET ?? 'change-me',
-        ) as { sub: string; type: string };
+        payload = verifyRefresh(refreshToken) as { sub: string; type: string };
       } catch {
         return res.status(401).json({ ok: false, message: 'Refresh token invalide' });
       }
@@ -106,58 +88,32 @@ export function registerAuthRoutes(app: Application) {
         return res.status(401).json({ ok: false, message: 'Type de token invalide' });
       }
 
-      // Verify token exists in DB (revocation check)
-      const stored = await prisma.refreshToken.findUnique({
-        where: { token: refreshToken },
-        select: { id: true, userId: true, expiresAt: true },
-      });
+      const stored = await prisma.refreshToken.findUnique({ where: { token: refreshToken }, select: { id: true, userId: true, expiresAt: true } });
 
       if (!stored) {
         return res.status(401).json({ ok: false, message: 'Refresh token révoqué' });
       }
 
       if (stored.expiresAt < new Date()) {
-        // Clean up stale entry
         await prisma.refreshToken.delete({ where: { id: stored.id } });
         return res.status(401).json({ ok: false, message: 'Refresh token expiré' });
       }
 
-      // Fetch user to build the new access token
-      const user = await prisma.user.findUnique({
-        where: { id: stored.userId },
-        select: { id: true, email: true, role: true, status: true, firstName: true, lastName: true },
-      });
-
+      const user = await prisma.user.findUnique({ where: { id: stored.userId }, select: { id: true, email: true, role: true, status: true, firstName: true, lastName: true } });
       if (!user) {
         return res.status(401).json({ ok: false, message: 'Utilisateur introuvable' });
       }
 
-      // Token rotation: invalidate old refresh token, issue new pair
       await prisma.refreshToken.delete({ where: { id: stored.id } });
 
-      const newAccessToken = jwt.sign(
-        { sub: user.id, role: user.role, status: user.status },
-        process.env.JWT_SECRET ?? 'change-me',
-        { expiresIn: (process.env.JWT_ACCESS_EXPIRATION ?? '15m') as unknown as jwt.SignOptions['expiresIn'] },
-      );
-
-      const newRefreshToken = jwt.sign(
-        { sub: user.id, type: 'refresh' },
-        process.env.JWT_SECRET ?? 'change-me',
-        { expiresIn: (process.env.JWT_REFRESH_EXPIRATION ?? '7d') as unknown as jwt.SignOptions['expiresIn'] },
-      );
+      const newAccessToken = signAccess({ sub: user.id, role: user.role, status: user.status });
+      const newRefreshToken = signRefresh({ sub: user.id, type: 'refresh' });
 
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + 7);
-      await prisma.refreshToken.create({
-        data: { token: newRefreshToken, userId: user.id, expiresAt: refreshExpiresAt },
-      });
+      await prisma.refreshToken.create({ data: { token: newRefreshToken, userId: user.id, expiresAt: refreshExpiresAt } });
 
-      return res.json({
-        ok: true,
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      });
+      return res.json({ ok: true, accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
@@ -165,7 +121,6 @@ export function registerAuthRoutes(app: Application) {
     }
   });
 
-  // ── Auth logout (revoke the provided refresh token) ─────────────────────────
   app.post('/api/auth/logout', async (req: Request, res: Response) => {
     try {
       const { refreshToken } = req.body as { refreshToken?: string };
@@ -189,10 +144,7 @@ export function requireDriver(req: Request, res: Response, next: NextFunction) {
 
   let payload: { sub: string; role: Role };
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET ?? 'change-me') as {
-      sub: string;
-      role: Role;
-    };
+    payload = verifyAccess(token) as { sub: string; role: Role };
   } catch {
     return res.status(401).json({ ok: false, message: 'Token invalide' });
   }
@@ -204,3 +156,4 @@ export function requireDriver(req: Request, res: Response, next: NextFunction) {
   (req as unknown as { driverId: string }).driverId = payload.sub;
   next();
 }
+

@@ -1,6 +1,7 @@
 import type { Application, Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import jwt from 'jsonwebtoken';
+import { signAccess, signRefresh, verifyRefresh } from '../lib/jwt';
+import { createRateLimiter } from '../middleware/rateLimiter';
 import { z } from 'zod';
 import { Role, UserStatus } from '@prisma/client';
 import { hashPassword, verifyPassword } from '../lib/password';
@@ -64,7 +65,8 @@ export function registerCompanyAuthRoutes(app: Application) {
     }
   });
 
-  app.post('/api/companies/login', async (req: Request, res: Response) => {
+  const authLimiter = createRateLimiter({ points: 5, duration: 15 * 60, keyPrefix: 'auth' });
+  app.post('/api/companies/login', authLimiter, async (req: Request, res: Response) => {
     try {
       const { email, password } = loginSchema.parse(req.body);
 
@@ -89,8 +91,8 @@ export function registerCompanyAuthRoutes(app: Application) {
         return res.status(401).json({ ok: false, message: 'Identifiants invalides' });
       }
 
-      const accessToken = jwtSign(user.id, user.role, user.status);
-      const refreshToken = jwtSignRefresh(user.id);
+      const accessToken = signAccess({ sub: user.id, role: user.role, status: user.status });
+      const refreshToken = signRefresh({ sub: user.id, type: 'refresh' });
 
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + REFRESH_DAYS);
@@ -124,17 +126,14 @@ export function registerCompanyAuthRoutes(app: Application) {
 
   app.post('/api/companies/logout', async (_req: Request, res: Response) => res.json({ ok: true }));
 
-  app.post('/api/companies/refresh', async (req: Request, res: Response) => {
+  app.post('/api/companies/refresh', authLimiter, async (req: Request, res: Response) => {
     try {
       const refreshToken: string | undefined = (req.body as Record<string, string | undefined>)?.refreshToken;
       if (!refreshToken) {
         return res.status(400).json({ ok: false, message: 'refreshToken requis' });
       }
 
-      const decoded = jwt.verify(
-        refreshToken,
-        process.env.JWT_SECRET ?? 'change-me',
-      ) as { sub: string; type: string };
+      const decoded = verifyRefresh(refreshToken) as { sub: string; type: string };
 
       if (decoded.type !== 'refresh') {
         return res.status(401).json({ ok: false, message: 'Type de token invalide' });
@@ -157,8 +156,8 @@ export function registerCompanyAuthRoutes(app: Application) {
         return res.status(401).json({ ok: false, message: 'Session invalide' });
       }
 
-      const accessToken = jwtSign(user.id, user.role, user.status);
-      const newRefreshToken = jwtSignRefresh(user.id);
+      const accessToken = signAccess({ sub: user.id, role: user.role, status: user.status });
+      const newRefreshToken = signRefresh({ sub: user.id, type: 'refresh' });
 
       const refreshExpiresAt = new Date();
       refreshExpiresAt.setDate(refreshExpiresAt.getDate() + REFRESH_DAYS);
@@ -184,12 +183,4 @@ export function registerCompanyAuthRoutes(app: Application) {
   });
 }
 
-function jwtSign(sub: string, role: string, status: string) {
-  const secret = process.env.JWT_SECRET ?? 'change-me';
-  return jwt.sign({ sub, role, status }, secret, { expiresIn: (process.env.JWT_ACCESS_EXPIRATION ?? '15m') as unknown as jwt.SignOptions['expiresIn'] });
-}
-
-function jwtSignRefresh(sub: string) {
-  const secret = process.env.JWT_SECRET ?? 'change-me';
-  return jwt.sign({ sub, type: 'refresh' }, secret, { expiresIn: (process.env.JWT_REFRESH_EXPIRATION ?? '7d') as unknown as jwt.SignOptions['expiresIn'] });
-}
+// local helpers are now in ../lib/jwt

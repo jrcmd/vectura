@@ -13,6 +13,7 @@ export type QaCheckItem = {
 
 const STORAGE_KEY = 'vectura.qa.checks';
 
+/** Hook pour gérer les checks QA : chargement, mise à jour et persistance locale */
 export function useQaChecklist(suite: string) {
   const [items, setItems] = useState<QaCheckItem[]>([]);
   const [loading, setLoading] = useState(false);

@@ -7,8 +7,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - uploads:/app/uploads
-      - backups:/app/backups
     ports:
       - "5432:5432"
 
@@ -28,6 +26,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-15m}
       - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION:-7d}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
@@ -47,10 +46,15 @@ services:
       - BACKUP_DIR=/app/backups
       - BACKUP_ENABLED=${BACKUP_ENABLED:-true}
       - BACKUP_USE_METADATA_ONLY=${BACKUP_USE_METADATA_ONLY:-false}
+      - BACKUP_ENCRYPTION_ENABLED=${BACKUP_ENCRYPTION_ENABLED:-true}
+      - BACKUP_ENCRYPTION_PASSPHRASE=${BACKUP_ENCRYPTION_PASSPHRASE}
       - NODE_ENV=${NODE_ENV:-development}
     depends_on:
       - postgres
       - redis
+    volumes:
+      - uploads:/app/uploads
+      - backups:/app/backups
 
   frontend:
     build:

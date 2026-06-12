@@ -17,5 +17,12 @@ export default {
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
 
   testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
+
+  // Handle ESM-only modules (file-type, pdf-parse)
+  transformIgnorePatterns: ['node_modules/(?!(file-type|pdf-parse)/)'],
+
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 };
 
