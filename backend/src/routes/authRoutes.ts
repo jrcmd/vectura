@@ -1,10 +1,11 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { signAccess, signRefresh, verifyRefresh, verifyAccess } from '../lib/jwt';
+import { signAccess, signRefresh, verifyRefresh } from '../lib/jwt';
 import { z } from 'zod';
 import { Role } from '@prisma/client';
 import { verifyPassword } from '../lib/password';
 import { createRateLimiter } from '../middleware/rateLimiter';
+import { verifyAuthToken, type AuthenticatedUser } from '../middleware/auth';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -134,26 +135,25 @@ export function registerAuthRoutes(app: Application) {
   });
 }
 
-export function requireDriver(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers.authorization;
-  if (!header?.startsWith('Bearer ')) {
-    return res.status(401).json({ ok: false, message: 'Token manquant' });
-  }
-
-  const token = header.slice(7);
-
-  let payload: { sub: string; role: Role };
+/**
+ * Middleware qui vérifie que l'utilisateur a le rôle CHAUFFEUR.
+ * Utilise la fonction verifyAuthToken centralisée.
+ */
+export async function requireDriver(req: Request, res: Response, next: NextFunction) {
   try {
-    payload = verifyAccess(token) as { sub: string; role: Role };
-  } catch {
-    return res.status(401).json({ ok: false, message: 'Token invalide' });
-  }
+    const user = await verifyAuthToken(req);
 
-  if (payload.role !== Role.CHAUFFEUR) {
-    return res.status(403).json({ ok: false, message: 'Accès réservé aux chauffeurs' });
-  }
+    if (user.role !== Role.CHAUFFEUR) {
+      return res.status(403).json({ ok: false, message: 'Accès réservé aux chauffeurs' });
+    }
 
-  (req as unknown as { driverId: string }).driverId = payload.sub;
-  next();
+    // Attache le driverId pour compatibilité ascendante
+    (req as unknown as { driverId: string }).driverId = user.id;
+    next();
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'TOKEN_INVALID';
+    const status = message === 'TOKEN_MISSING' || message === 'TOKEN_INVALID' ? 401 : 403;
+    res.status(status).json({ ok: false, message: message === 'TOKEN_MISSING' ? 'Token manquant' : message === 'TOKEN_INVALID' ? 'Token invalide' : 'Compte non autorisé' });
+  }
 }
 

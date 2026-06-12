@@ -1,38 +1,62 @@
-FROM node:20-alpine
+# ============================================
+# VECTURA BACKEND — Dockerfile Production
+# ============================================
+
+FROM node:20-alpine AS builder
+
+# Dépendances de build
+RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-RUN apk add --no-cache \
-  openssl \
-  libcrypto3 \
-  libssl3 \
-  libc6-compat \
-  python3 \
-  make \
-  g++
-
-# Create non-root user appuser (UID 1001) for security - Priorité 6
-RUN addgroup -g 1001 appuser && \
-    adduser -D -u 1001 -G appuser appuser
-
+# Copie des fichiers de dépendances
 COPY package*.json ./
-RUN npm ci
+COPY prisma ./prisma/
 
-COPY . .
+# Installation des dépendances
+RUN npm ci --only=production && npm cache clean --force
 
-RUN npm run build
+# Génération du client Prisma
+RUN npx prisma generate
 
-# Create required directories and set permissions for appuser
-RUN mkdir -p /app/uploads /app/backups && \
-    chown -R appuser:appuser /app && \
-    chmod -R 755 /app
+# Étape de production
+FROM node:20-alpine AS production
 
-EXPOSE 3000
+# Installation des dépendances runtime
+RUN apk add --no-cache curl wget ca-certificates
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 CMD wget -qO- http://localhost:3000/api/health || exit 1
+# Création utilisateur non-root
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
 
-# Switch to non-root user appuser
+WORKDIR /app
+
+# Copie des dépendances depuis builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
+
+# Copie du code compilé
+COPY dist ./dist
+
+# Création des répertoires avec bonnes permissions
+RUN mkdir -p /app/uploads /app/backups /app/logs && \
+    chown -R appuser:appgroup /app
+
+# Passage en non-root
 USER appuser
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+# Variables d'environnement
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1
+
+# Port exposé (documentaire)
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
 

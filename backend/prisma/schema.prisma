@@ -284,9 +284,14 @@ model NotificationLog {
   recipientId String
   email       String
   subject     String
+  body        String?
   sentAt      DateTime @default(now())
   status      String
   error       String?
+  retryCount  Int      @default(0)
+  maxRetries  Int      @default(3)
+
+  @@index([status, retryCount, sentAt])
 }
 
 model AuditEvent {

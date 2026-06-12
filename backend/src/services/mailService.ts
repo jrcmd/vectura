@@ -1,4 +1,5 @@
 import nodemailer, { type Transporter, type SentMessageInfo } from 'nodemailer';
+import prisma from '../lib/prisma';
 
 type SendMailInput = {
   to: string;
@@ -22,7 +23,6 @@ function buildTransport(): Transporter<SentMessageInfo> | Promise<Transporter<Se
   const pass = process.env.SMTP_PASS;
 
   if (!host || !user || !pass) {
-    // Fallback Ethereal (pas de clé .env requise)
     return nodemailer.createTestAccount().then((account) =>
       nodemailer.createTransport({
         host: 'smtp.ethereal.email',
@@ -105,11 +105,75 @@ const TEMPLATES: Record<string, (vars: Record<string, string>) => { subject: str
   }),
 };
 
-export async function sendTemplateMail(to: string, type: string, variables: Record<string, string>) {
+export async function sendTemplateMail(to: string, type: string, variables: Record<string, string>, recipientId?: string) {
   const template = TEMPLATES[type];
   if (!template) {
     throw new Error(`Template inconnu : ${type}`);
   }
   const { subject, text } = template(variables);
-  return sendMail({ to, subject, text });
+
+  const result = await sendMail({ to, subject, text });
+
+  // Log dans NotificationLog avec retryCount et body pour retry
+  await prisma.notificationLog.create({
+    data: {
+      type,
+      recipientId: recipientId ?? '',
+      email: to,
+      subject,
+      body: text,
+      status: result.success ? 'SENT' : 'FAILED',
+      error: result.error,
+      retryCount: result.success ? 0 : 1,
+      maxRetries: 3,
+    },
+  });
+
+  return result;
+}
+
+/** Retourne le délai de retry exponentiel en millisecondes */
+export function getRetryDelaySeconds(retryCount: number): number {
+  // 1min, 5min, 15min selon le nombre de retries
+  const delays = [60, 300, 900]; // en secondes
+  return delays[retryCount] ?? 900;
+}
+
+/** Récupère les notifications en échec ou en retry avec retryCount < maxRetries */
+export async function getFailedNotifications() {
+  return prisma.notificationLog.findMany({
+    where: {
+      status: { in: ['FAILED', 'RETRY'] },
+      retryCount: { lt: 3 },
+    },
+    orderBy: { sentAt: 'asc' },
+  });
+}
+
+/** Incrémente le retryCount et marque FAILED quand maxRetries atteint */
+export async function recordRetryAttempt(notificationId: string, success: boolean, error?: string) {
+  const notification = await prisma.notificationLog.findUnique({
+    where: { id: notificationId },
+  });
+
+  if (!notification) return null;
+
+  if (success) {
+    return prisma.notificationLog.update({
+      where: { id: notificationId },
+      data: { status: 'SENT', retryCount: { increment: 1 } },
+    });
+  }
+
+  const newRetryCount = (notification.retryCount ?? 0) + 1;
+  const shouldFail = newRetryCount >= (notification.maxRetries ?? 3);
+
+  return prisma.notificationLog.update({
+    where: { id: notificationId },
+    data: {
+      retryCount: newRetryCount,
+      status: shouldFail ? 'FAILED' : 'RETRY',
+      error: error ?? notification.error,
+    },
+  });
 }
