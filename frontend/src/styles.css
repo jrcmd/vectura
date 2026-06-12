@@ -2,3 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Focus-visible styles pour accessibilité clavier */
+@layer base {
+  .focus-visible {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2;
+  }
+  
+  input:focus-visible,
+  button:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  }
+}
+

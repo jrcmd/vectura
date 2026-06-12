@@ -13,14 +13,13 @@ Tu implémentes le projet Vectura : une plateforme de mise en relation entre cha
 et entreprises de transport.
 
 STACK TECHNIQUE :
-- Frontend : React 18 + TypeScript + Vite + Tailwind CSS
+- Frontend : React 19 + TypeScript + Vite + Tailwind CSS v4 + shadcn/ui
 - Backend : Node.js + Express + TypeScript + Prisma ORM
-- Base de données : PostgreSQL 15 + Redis 7
-- Auth : JWT (access + refresh tokens) + hachage SHA-256 salé
+- Base de données : PostgreSQL 16 + Redis 7
+- Auth : JWT (access + refresh tokens) + bcrypt
 - Upload : Multer + stockage local (dev) / S3-compatible (prod)
 - Email : Nodemailer + SMTP
-- SMS : Twilio-ready
-- Docker : docker compose (frontend + backend + postgres + redis)
+- Docker : docker-compose (frontend + backend + postgres + redis)
 - Tests : Vitest (frontend) + Jest (backend)
 
 RÈGLES :
@@ -76,7 +75,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [✅] `docker compose up` démarre sans erreur
+- [✅] `docker-compose up` démarre sans erreur
 - [✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅]L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -118,7 +117,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [✅] `docker compose up` démarre sans erreur
+- [✅] `docker-compose up` démarre sans erreur
 - [✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅] L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -160,7 +159,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [✅] `docker compose up` démarre sans erreur
+- [✅] `docker-compose up` démarre sans erreur
 - [✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅] L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -202,7 +201,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [✅] `docker compose up` démarre sans erreur
+- [✅] `docker-compose up` démarre sans erreur
 - [✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅] L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -245,7 +244,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [✅] `docker compose up` démarre sans erreur
+- [✅] `docker-compose up` démarre sans erreur
 - [✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅] L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -293,7 +292,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -335,7 +334,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -377,7 +376,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -419,7 +418,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -456,7 +455,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -504,7 +503,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -546,7 +545,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -588,7 +587,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -630,7 +629,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -672,7 +671,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -714,7 +713,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -762,7 +761,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -804,7 +803,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -846,7 +845,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -888,7 +887,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -930,7 +929,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -966,7 +965,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1014,7 +1013,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1056,7 +1055,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1098,7 +1097,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1140,7 +1139,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1178,7 +1177,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1226,7 +1225,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1268,7 +1267,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1310,7 +1309,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1352,7 +1351,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1390,7 +1389,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1438,7 +1437,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1480,7 +1479,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1522,7 +1521,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1559,7 +1558,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1607,7 +1606,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [ ✅] `docker compose up` démarre sans erreur
+- [ ✅] `docker-compose up` démarre sans erreur
 - [ ✅] Les routes API répondent correctement (test via Postman/curl)
 - [ ✅] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1649,7 +1648,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [✅ ] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [✅ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1691,7 +1690,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1726,7 +1725,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ✅] Tous les fichiers générés sont copiés dans le projet
-- [✅ ] `docker compose up` démarre sans erreur
+- [✅ ] `docker-compose up` démarre sans erreur
 - [✅ ] Les routes API répondent correctement (test via Postman/curl)
 - [✅ ] L'interface s'affiche correctement dans le navigateur
 - [ ✅] Aucune erreur TypeScript (`npm run type-check`)
@@ -1774,7 +1773,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1816,7 +1815,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1858,7 +1857,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1900,7 +1899,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1924,7 +1923,7 @@ TASKS À IMPLÉMENTER DANS CETTE STORY :
 - [Critique] Suivre erreurs critiques : Analyser les erreurs prioritaires
 - [Normale] Ajuster UX selon retours terrain : Améliorer les écrans selon usage réel
 - [Normale] Ajuster règles métier si besoin : Faire évoluer les règles opérationnelles
-- [Normale] Prioriser V1 après MVP : Préparer la roadmap après lancement
+- [Normale] Priodoriser V1 après MVP : Préparer la roadmap après lancement
 
 INSTRUCTIONS :
 1. Commence par lister les fichiers à créer/modifier
@@ -1940,7 +1939,7 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 #### ✅ Checklist de validation
 - [ ] Tous les fichiers générés sont copiés dans le projet
-- [ ] `docker compose up` démarre sans erreur
+- [ ] `docker-compose up` démarre sans erreur
 - [ ] Les routes API répondent correctement (test via Postman/curl)
 - [ ] L'interface s'affiche correctement dans le navigateur
 - [ ] Aucune erreur TypeScript (`npm run type-check`)
@@ -1971,10 +1970,10 @@ Fournis d'abord la liste des fichiers, puis le contenu de chaque fichier prêt �
 
 ```bash
 # Démarrer le projet
-docker compose up -d
+docker-compose up -d
 
 # Vérifier les logs
-docker compose logs -f
+docker-compose logs -f
 
 # Lancer les tests
 npm run test

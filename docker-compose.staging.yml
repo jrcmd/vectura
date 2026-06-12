@@ -1,72 +1,110 @@
+version: '3.8'
+
 services:
-  postgres-staging:
+  # ============================================
+  # POSTGRESQL — Base de données
+  # ============================================
+  postgres:
     image: postgres:15-alpine
+    container_name: vectura-postgres-staging
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: vectura
-      POSTGRES_USER: vectura
+      POSTGRES_DB: vectura_staging
+      POSTGRES_USER: ${DB_USER:-vectura}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_staging_data:/var/lib/postgresql/data
+      - ./backups:/backups:rw
     networks:
-      - vectura-staging
+      - vectura-network-staging
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vectura} -d vectura_staging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  redis-staging:
+  # ============================================
+  # REDIS — Cache & Sessions
+  # ============================================
+  redis:
     image: redis:7-alpine
+    container_name: vectura-redis-staging
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_staging_data:/data
     networks:
-      - vectura-staging
+      - vectura-network-staging
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
-  backend-staging:
+  # ============================================
+  # BACKEND — API Node.js/Express
+  # ============================================
+  backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
+    container_name: vectura-backend-staging
+    restart: unless-stopped
+    env_file:
+      - .env.staging
     environment:
-      DATABASE_URL: postgresql://vectura:${DB_PASSWORD}@postgres-staging:5432/vectura
-      REDIS_URL: redis://redis-staging:6379
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
-      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      FROM_EMAIL: ${FROM_EMAIL}
-      DOMAIN: ${DOMAIN:-staging.vectura.local}
-      SSL_MODE: ${SSL_MODE:-external}
-      API_BASE_URL: ${API_BASE_URL:-https://api-staging.vectura.local/api}
-      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-https://staging.vectura.local}
-      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-10}
-      UPLOAD_DIR: /app/uploads
-      INVOICE_DIR: /app/uploads/invoices
-      BACKUP_DIR: /app/backups
-      BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
-      BACKUP_USE_METADATA_ONLY: ${BACKUP_USE_METADATA_ONLY:-false}
-      NODE_ENV: staging
-    depends_on:
-      - postgres-staging
-      - redis-staging
+      - NODE_ENV=staging
     volumes:
-      - staging_uploads:/app/uploads
-      - staging_backups:/app/backups
+      - uploads_staging:/app/uploads:rw
+      - ./backups:/app/backups:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
-      - vectura-staging
-    ports:
-      - "${BACKEND_PORT:-3001}:3000"
+      - vectura-network-staging
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  frontend-staging:
+  # ============================================
+  # FRONTEND — Application React
+  # ============================================
+  frontend:
     build:
       context: ./frontend
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-https://api-staging.vectura.local/api}
+      dockerfile: Dockerfile
+    container_name: vectura-frontend-staging
+    restart: unless-stopped
+    volumes:
+      - uploads_staging:/app/uploads:rw
     depends_on:
-      - backend-staging
+      - backend
     networks:
-      - vectura-staging
-    ports:
-      - "${FRONTEND_PORT:-5174}:4173"
+      - vectura-network-staging
+
+networks:
+  vectura-network-staging:
+    driver: bridge
 
 volumes:
   postgres_staging_data:
-  staging_uploads:
-  staging_backups:
-
-networks:
-  vectura-staging:
+    driver: local
+  redis_staging_data:
+    driver: local
+  uploads_staging:
+    driver: local

@@ -1,74 +1,158 @@
+version: '3.8'
+
 services:
-  postgres-prod:
+  # ============================================
+  # POSTGRESQL — Base de données
+  # ============================================
+  postgres:
     image: postgres:15-alpine
+    container_name: vectura-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: vectura
-      POSTGRES_USER: vectura
+      POSTGRES_DB: vectura_prod
+      POSTGRES_USER: ${DB_USER:-vectura}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_prod_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups:rw
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
-      - vectura-prod
+      - vectura-network
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vectura} -d vectura_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
-  redis-prod:
+  # ============================================
+  # REDIS — Cache & Sessions
+  # ============================================
+  redis:
     image: redis:7-alpine
+    container_name: vectura-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
     networks:
-      - vectura-prod
+      - vectura-network
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
-  backend-prod:
+  # ============================================
+  # BACKEND — API Node.js/Express
+  # ============================================
+  backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    container_name: vectura-backend
+    restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
-      DATABASE_URL: postgresql://vectura:${DB_PASSWORD}@postgres-prod:5432/vectura
-      REDIS_URL: redis://redis-prod:6379
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
-      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      FROM_EMAIL: ${FROM_EMAIL}
-      DOMAIN: ${DOMAIN}
-      SSL_MODE: ${SSL_MODE:-external}
-      API_BASE_URL: ${API_BASE_URL:-https://api.${DOMAIN}/api}
-      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-https://${DOMAIN}}
-      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-10}
-      UPLOAD_DIR: /app/uploads
-      INVOICE_DIR: /app/uploads/invoices
-      BACKUP_DIR: /app/backups
-      BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
-      BACKUP_USE_METADATA_ONLY: ${BACKUP_USE_METADATA_ONLY:-false}
-      BACKUP_ENCRYPTION_ENABLED: ${BACKUP_ENCRYPTION_ENABLED:-true}
-      BACKUP_ENCRYPTION_PASSPHRASE: ${BACKUP_ENCRYPTION_PASSPHRASE}
-      NODE_ENV: production
-    depends_on:
-      - postgres-prod
-      - redis-prod
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
     volumes:
-      - prod_uploads:/app/uploads
-      - prod_backups:/app/backups
-    networks:
-      - vectura-prod
-    ports:
-      - "${BACKEND_PORT:-3000}:3000"
-
-  frontend-prod:
-    build:
-      context: ./frontend
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-https://api.${DOMAIN}/api}
+      - uploads:/app/uploads:rw
+      - ./backups:/app/backups:rw
+      - backend_logs:/app/logs
     depends_on:
-      - backend-prod
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
-      - vectura-prod
-    ports:
-      - "${FRONTEND_PORT:-80}:4173"
+      - vectura-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
-volumes:
-  postgres_prod_data:
-  prod_uploads:
-  prod_backups:
+  # ============================================
+  # BACKUP — Service de sauvegarde automatique
+  # ============================================
+  backup:
+    image: postgres:15-alpine
+    container_name: vectura-backup
+    restart: unless-stopped
+    environment:
+      - PGPASSWORD=${DB_PASSWORD}
+      - DB_USER=${DB_USER:-vectura}
+      - DB_NAME=vectura_prod
+      - BACKUP_DIR=/backups
+      - BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY}
+    volumes:
+      - ./backups:/backups:rw
+      - ./scripts:/scripts:ro
+    networks:
+      - vectura-network
+    depends_on:
+      - postgres
+    command: >
+      sh -c "
+        echo '0 3 * * * /scripts/backup.sh >> /var/log/backup.log 2>&1' | crontab - &&
+        crond -f -l 2
+      "
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
 
 networks:
-  vectura-prod:
+  vectura-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads:
+    driver: local
+  backend_logs:
+    driver: local

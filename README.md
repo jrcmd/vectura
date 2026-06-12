@@ -77,9 +77,20 @@ vectura/
 │   │   └── pages/
 │   ├── Dockerfile
 │   └── package.json
-├── docker-compose.yml
-├── docker-compose.staging.yml
-├── docker-compose.prod.yml
+├── scripts/                   # Scripts déploiement & ops
+│   ├── generate-secrets.sh
+│   ├── pre-deploy-check.sh
+│   ├── deploy-staging.sh
+│   ├── deploy-production.sh
+│   ├── backup.sh
+│   └── ...
+├── nginx-conf/                # Configuration Nginx
+│   ├── nginx.conf
+│   ├── api.vectura.fr
+│   └── app.vectura.fr
+├── docker-compose.yml         # développement local
+├── docker-compose.staging.yml # préproduction
+├── docker-compose.prod.yml    # production
 ├── .env.example
 ├── .env.staging.example
 └── .env.production.example
@@ -119,28 +130,39 @@ vectura/
 
 ## Scripts utiles
 
+Scripts de gestion disponibles dans `scripts/` :
+
+### Développement
 ```bash
-# Backend
-cd backend
-npm run dev
-npm run build
-npm run type-check
-npm run lint
-npm test
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:seed
+./scripts/generate-secrets.sh    # Générer les secrets JWT, DB, backup
+./scripts/smoke-tests.sh         # Tests de fumée post-déploiement
+./scripts/seed-staging.sh        # Injection données test en staging
+```
 
-# Frontend
-cd frontend
-npm run dev
-npm run build
-npm run lint
-npm test
+### Pré-déploiement
+```bash
+./scripts/pre-deploy-check.sh    # Vérifications lint/test/audit
+./scripts/pre-deploy-backup.sh   # Backup avant déploiement
+```
 
-# Déploiement
-./scripts/deploy-staging.sh
-./scripts/deploy-production.sh
+### Déploiement
+```bash
+./scripts/deploy-staging.sh <branch>    # Déploiement staging
+./scripts/deploy-production.sh <tag>  # Déploiement production
+./scripts/rollback.sh <backup_name>   # Rollback en cas d'échec
+```
+
+### Production & Monitoring
+```bash
+./scripts/setup-server.sh         # Installation serveur (Ubuntu)
+./scripts/setup-nginx.sh          # Configuration Nginx + SSL
+./scripts/backup.sh               # Sauvegarde DB chiffrée
+./scripts/restore.sh <file.gpg>   # Restauration depuis backup
+./scripts/monitoring.sh           # Dashboard métriques
+./scripts/alerting.sh             # Alerting (cron)
+./scripts/cleanup-logs.sh         # Nettoyage logs
+./scripts/verify-backups.sh       # Vérification intégrité backups
+./scripts/weekly-report.sh        # Rapport hebdomadaire
 ```
 
 ## Docker Compose
